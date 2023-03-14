@@ -1,0 +1,144 @@
+<html lang="fa">
+<head>
+  <meta charset="utf-8">
+  <style type="text/css">
+    p {margin: 0; padding: 5px;}
+
+  </style>
+</head>
+<body dir="rtl">
+  <p>
+    <label>
+      تعداد آی پی:
+      <input id="download-num" type="number" min="5" max="100" value="10" style="width: 100px;"/>
+    </label>
+  </p>
+  <p>
+    <label>
+      حجم دانلود برای تست:
+      <select id="download-size" style="width: 100px;">
+        <option value="262144">256KB</option>
+        <option value="524288">512KB</option>
+        <option value="1048576" selected="selected">1MB</option>
+        <option value="2097152">2MB</option>
+        <option value="5242880">5MB</option>
+        <option value="10485760">10MB</option>
+      </select>
+    </label>
+  </p>
+  <p>
+    <button onclick="startScan()">شروع</button>
+  </p>
+  <hr/>
+  <div id="result"></div>
+</body>
+</html>
+
+<script type="text/javascript">
+// Version 1.0
+
+const cfIPv4 = [
+  '173.245.48.0/20',
+  '103.21.244.0/22',
+  '103.22.200.0/22',
+  '103.31.4.0/22',
+  '141.101.64.0/18',
+  '108.162.192.0/18',
+  '190.93.240.0/20',
+  '188.114.96.0/20',
+  '197.234.240.0/22',
+  '198.41.128.0/17',
+  '162.158.0.0/15',
+  '104.16.0.0/13',
+  '104.24.0.0/14',
+  '172.64.0.0/13',
+  '131.0.72.0/22'
+];
+
+function startScan() {
+  var bytes = document.getElementById('download-size').value;
+  var num = document.getElementById('download-num').value;
+  var ips = [];
+  for (var cidr of cfIPv4) {
+    ips = ips.concat(cidrToIpArray(cidr));
+  }
+  var selectedIPs = getMultipleRandomElements(ips, num);
+  testIPs(selectedIPs, bytes)
+}
+
+async function testIPs(ipList, bytes, timeout = 5000) {
+  const sniHostname = "speed.cloudflare.com";
+
+  for (const ip of ipList) {
+    const url = `https://${sniHostname}/__down?bytes=${bytes}`;
+    const ts = Date.now();
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => {
+      controller.abort();
+    }, timeout);
+    const timeoutSignal = controller.signal;
+
+    const request = new Request(url, {
+      method: "GET",
+      headers: {
+        Host: ip,
+        sni: sniHostname,
+        servername: sniHostname
+      },
+      redirect: "follow",
+      mode: "no-cors"
+    });
+
+    try {
+      const response = await fetch(request, {
+        signal: timeoutSignal,
+        cf: {
+          sni: sniHostname
+        }
+      });
+      const t = Date.now() - ts;
+      const speed = Math.round(bytes / t / 10) / 100;
+      const color = speed < 2 ? 'orange' : 'green';
+      document.getElementById('result').innerHTML += `<p dir="ltr" style="color: ${color}"><input value="${ip}" style="font-size: 14px; font-weight: bold; width: 120px;"/>&nbsp;&nbsp; ${speed} MB/s.</p>`;
+    } catch (error) {
+      if (error.name === "AbortError") {
+        document.getElementById('result').innerHTML += `<p dir="ltr" style="color: darkred">${ip}: request timed out!</p>`;
+      } else {
+        document.getElementById('result').innerHTML += `<p dir="ltr" style="color: darkred">${ip}: ${error.message}!</p>`;
+      }
+    }
+
+    clearTimeout(timeoutId);
+  }
+  document.getElementById('result').innerHTML += `<p dir="ltr" style="color: green"><strong>DONE</strong></p>`;
+}
+
+
+function cidrToIpArray(cidr) {
+  const parts = cidr.split('/');
+  const ip = parts[0];
+  const mask = parseInt(parts[1], 10);
+  const ipParts = ip.split('.');
+  const start = (
+    (parseInt(ipParts[0], 10) << 24) |
+    (parseInt(ipParts[1], 10) << 16) |
+    (parseInt(ipParts[2], 10) << 8) |
+    parseInt(ipParts[3], 10)
+  ) >>> 0; // convert to unsigned int
+  const end = (start | (0xffffffff >>> mask)) >>> 0; // convert to unsigned int
+
+  const ips = [];
+  for (let i = start; i <= end; i++) {
+    const a = (i >> 24) & 0xff;
+    const b = (i >> 16) & 0xff;
+    const c = (i >> 8) & 0xff;
+    const d = i & 0xff;
+    ips.push(`${a}.${b}.${c}.${d}`);
+  }
+  return ips;
+}
+function getMultipleRandomElements(arr, num) {
+  var shuffled = [...arr].sort(() => 0.5 - Math.random())
+  return shuffled.slice(0, num)
+}
+</script>
