@@ -1,14 +1,70 @@
+<!DOCTYPE html>
 <html>
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <style type="text/css">
-    body {text-align: center; font-size: 18px;}
-    p {margin: 0; padding: 5px;}
-    th, td {border: 1px solid #ccc;}
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Cloudflare IP Tester</title>
+  <style>
+    body {
+      font-family: "Segoe UI", "Roboto", sans-serif;
+      text-align: center;
+      background-color: #F2F2F2;
+      margin: 0;
+    }
+    table {
+      border-collapse: collapse;
+      margin: 30px auto;
+      box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+      overflow-x: auto;
+    }
+    th, td {
+      padding: 10px 20px;
+      border: 1px solid #ccc;
+    }
+    th {
+      background-color: #3F3F3F;
+      color: #F2F2F2;
+      text-transform: uppercase;
+    }
+    td:first-child {
+      font-weight: bold;
+    }
+    #searching {
+      background-color: #F2F2F2;
+      padding: 20px;
+      box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+      margin: 30px auto;
+      max-width: 600px;
+      text-align: left;
+    }
+    #searching p {
+      margin: 0;
+      font-size: 18px;
+    }
+    #searching p.success {
+      color: #2E7D32;
+    }
+    #searching p.error {
+      color: #C62828;
+    }
+    h1 {
+      margin-top: 50px;
+      font-size: 36px;
+      text-transform: uppercase;
+      color: #3F3F3F;
+    }
+    @media only screen and (max-width: 600px) {
+      th, td {
+        padding: 5px;
+      }
+      h1 {
+        font-size: 24px;
+      }
+    }
   </style>
 </head>
 <body>
-  <div id="searching" align="left"></div>
+  <h1>Cloudflare IP Tester</h1>
+  <div id="searching"></div>
   <table>
     <thead>
       <tr>
@@ -19,9 +75,6 @@
     <tbody id="result">
     </tbody>
   </table>
-</body>
-</html>
-
 <script type="text/javascript">
 // Version 1.1
 
