@@ -165,10 +165,10 @@ let maxIP = urlParams.get('max')
 let testNo = 0;
 let validIPs = [];
 
-if (maxIP === null) {
-  maxIP = 20
-} else {
-  maxIP = parseInt(maxIP);
+maxIP = ~~maxIP;
+
+if (maxIP < 1) {
+  maxIP = 20;
 }
 
 var ips;
