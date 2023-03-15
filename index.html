@@ -1,41 +1,29 @@
-<html lang="fa">
+<html>
 <head>
-  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <style type="text/css">
+    body {text-align: center; font-size: 18px;}
     p {margin: 0; padding: 5px;}
-
+    th, td {border: 1px solid #ccc;}
   </style>
 </head>
-<body dir="rtl">
-  <p>
-    <label>
-      تعداد آی پی:
-      <input id="download-num" type="number" min="5" max="100" value="10" style="width: 100px;"/>
-    </label>
-  </p>
-  <p>
-    <label>
-      حجم دانلود برای تست:
-      <select id="download-size" style="width: 100px;">
-        <option value="262144">256KB</option>
-        <option value="524288">512KB</option>
-        <option value="1048576" selected="selected">1MB</option>
-        <option value="2097152">2MB</option>
-        <option value="5242880">5MB</option>
-        <option value="10485760">10MB</option>
-      </select>
-    </label>
-  </p>
-  <p>
-    <button onclick="startScan()">شروع</button>
-  </p>
-  <hr/>
-  <div id="result"></div>
+<body>
+  <div id="searching" align="left"></div>
+  <table>
+    <thead>
+      <tr>
+        <th width="200">IP</th>
+        <th width="70">Time</th>
+      </tr>
+    </thead>
+    <tbody id="result">
+    </tbody>
+  </table>
 </body>
 </html>
 
 <script type="text/javascript">
-// Version 1.0
+// Version 1.1
 
 const cfIPv4 = [
   '173.245.48.0/20',
@@ -55,62 +43,66 @@ const cfIPv4 = [
   '131.0.72.0/22'
 ];
 
-function startScan() {
-  var bytes = document.getElementById('download-size').value;
-  var num = document.getElementById('download-num').value;
-  var ips = [];
-  for (var cidr of cfIPv4) {
-    ips = ips.concat(cidrToIpArray(cidr));
-  }
-  var selectedIPs = getMultipleRandomElements(ips, num);
-  testIPs(selectedIPs, bytes)
+// var bytes = document.getElementById('download-size').value;
+// var num = document.getElementById('download-num').value;
+var ips = [];
+for (var cidr of cfIPv4) {
+  ips = ips.concat(cidrToIpArray(cidr));
 }
+testIPs(randomizeElements(ips))
 
-async function testIPs(ipList, bytes, timeout = 5000) {
-  const sniHostname = "speed.cloudflare.com";
-
+async function testIPs(ipList) {
+  const timeout = 2000;
+  var testNo = 0;
+  var numberOfWorkingIPs = 0;
+  var validIPs = [];
   for (const ip of ipList) {
-    const url = `https://${sniHostname}/__down?bytes=${bytes}`;
-    const ts = Date.now();
+    testNo++;
+    var testResult = 0;
+    const url = `https://${ip}/__down`;
+    const startTime = performance.now();
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => {
-      controller.abort();
-    }, timeout);
-    const timeoutSignal = controller.signal;
 
-    const request = new Request(url, {
-      method: "GET",
-      headers: {
-        Host: ip,
-        sni: sniHostname,
-        servername: sniHostname
-      },
-      redirect: "follow",
-      mode: "no-cors"
-    });
-
-    try {
-      const response = await fetch(request, {
-        signal: timeoutSignal,
-        cf: {
-          sni: sniHostname
-        }
-      });
-      const t = Date.now() - ts;
-      const speed = Math.round(bytes / t / 10) / 100;
-      const color = speed < 2 ? 'orange' : 'green';
-      document.getElementById('result').innerHTML += `<p dir="ltr" style="color: ${color}"><input value="${ip}" style="font-size: 14px; font-weight: bold; width: 120px;"/>&nbsp;&nbsp; ${speed} MB/s.</p>`;
-    } catch (error) {
-      if (error.name === "AbortError") {
-        document.getElementById('result').innerHTML += `<p dir="ltr" style="color: darkred">${ip}: request timed out!</p>`;
+    for (const ch of ['', '|', '/', '-', '\\']) {
+      const timeoutId = setTimeout(() => {
+        controller.abort();
+      }, timeout);
+      if (ch) {
+        document.getElementById('searching').innerHTML = `<p dir="ltr" style="color: green">Test #${testNo}: ${ip} &nbsp; &nbsp; ${ch}</p>`;
       } else {
-        document.getElementById('result').innerHTML += `<p dir="ltr" style="color: darkred">${ip}: ${error.message}!</p>`;
+        document.getElementById('searching').innerHTML = `<p dir="ltr" style="color: red">Test #${testNo}: ${ip}</p>`;
       }
+      try {
+        const response = await fetch(url, {
+          signal: controller.signal,
+        });
+
+        testResult++;
+      } catch (error) {
+        if (error.name === "AbortError") {
+          //
+        } else {
+          testResult++;
+        }
+      }
+      clearTimeout(timeoutId);
     }
 
-    clearTimeout(timeoutId);
+    const duration = performance.now() - startTime;
+
+    if (testResult === 5) {
+      numberOfWorkingIPs++;
+      validIPs.push({ip: ip, time: Math.floor(duration / 10) / 100});
+      const sortedArr = validIPs.sort((a, b) => a.time - b.time);
+      const tableRows = sortedArr.map(obj => `<tr><td>${obj.ip}</td><td>${obj.time}</td><tr>`).join('\n');
+      document.getElementById('result').innerHTML = tableRows;
+    }
+
+    if (numberOfWorkingIPs >= 20) {
+      break;
+    }
   }
-  document.getElementById('result').innerHTML += `<p dir="ltr" style="color: green"><strong>DONE</strong></p>`;
+  document.getElementById('searching').innerHTML = `<strong>DONE</strong>`;
 }
 
 
@@ -137,8 +129,8 @@ function cidrToIpArray(cidr) {
   }
   return ips;
 }
-function getMultipleRandomElements(arr, num) {
-  var shuffled = [...arr].sort(() => 0.5 - Math.random())
-  return shuffled.slice(0, num)
+
+function randomizeElements(arr) {
+  return [...arr].sort(() => 0.5 - Math.random());
 }
 </script>
