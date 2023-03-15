@@ -43,15 +43,23 @@ const cfIPv4 = [
   '131.0.72.0/22'
 ];
 
-// var bytes = document.getElementById('download-size').value;
-// var num = document.getElementById('download-num').value;
+const urlParams = new URLSearchParams(window.location.search);
+
+var maxIP = urlParams.get('max')
+
+if (maxIP === null) {
+  maxIP = 20
+} else {
+  maxIP = parseInt(maxIP);
+}
+
 var ips = [];
 for (var cidr of cfIPv4) {
   ips = ips.concat(cidrToIpArray(cidr));
 }
-testIPs(randomizeElements(ips))
+testIPs(randomizeElements(ips), maxIP)
 
-async function testIPs(ipList) {
+async function testIPs(ipList, maxIP) {
   const timeout = 2000;
   var testNo = 0;
   var numberOfWorkingIPs = 0;
@@ -98,7 +106,7 @@ async function testIPs(ipList) {
       document.getElementById('result').innerHTML = tableRows;
     }
 
-    if (numberOfWorkingIPs >= 20) {
+    if (maxIP > 0 && numberOfWorkingIPs >= maxIP) {
       break;
     }
   }
