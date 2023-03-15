@@ -14,6 +14,8 @@ npm run serve
 ```
 npm run build
 ```
+you must serve `index.html` in `./vue3/dist/` path, after build the project using above command
+
 
 ### Lints and fixes files
 ```
