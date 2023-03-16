@@ -382,7 +382,7 @@ function cidrToIpArray(cidr, cdnLocation) {
 }
 
 function randomizeElements(arr) {
-  return [...arr].sort((el1, el2) => {return el2.location === 'London' ? 0.90 - Math.random() : 0.5 - Math.random()});
+  return [...arr].sort((el1, el2) => {return el2.location === 'London' ? 0.75 - Math.random() : 0.5 - Math.random()});
 }
 
 function downloadAsCSV() {
