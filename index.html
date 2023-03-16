@@ -342,7 +342,7 @@ async function testIPs(ipList) {
       numberOfWorkingIPs++;
       validIPs.push({ip: el.ip, location: el.location, time: Math.floor(duration / 5)});
       const sortedArr = validIPs.sort((a, b) => a.time - b.time);
-      const tableRows = sortedArr.map(obj => `<tr><td></td><td>${obj.ip}ms</td><td>${obj.time}</td><td><img height="20px" src="assets/${obj.location}.png" /></td></tr>`).join('\n');
+      const tableRows = sortedArr.map(obj => `<tr><td></td><td>${obj.ip}</td><td>${obj.time}ms</td><td><img height="20px" src="assets/${obj.location}.png" /></td></tr>`).join('\n');
       document.getElementById('result').innerHTML = tableRows;
     }
 
