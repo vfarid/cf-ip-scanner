@@ -161,15 +161,9 @@ const cfIPv4 = {
 
 const urlParams = new URLSearchParams(window.location.search);
 
-let maxIP = urlParams.get('max')
+let maxIP = ~~urlParams.get('max')
 let testNo = 0;
 let validIPs = [];
-
-if (maxIP === null) {
-  maxIP = 20
-} else {
-  maxIP = parseInt(maxIP);
-}
 
 var ips;
 var cidr;
