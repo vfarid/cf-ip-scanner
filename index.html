@@ -1,21 +1,190 @@
 <html>
 <head>
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <style type="text/css" href="cis.css"></style>
+  <link rel="stylesheet" href="cis.css">
 </head>
 <body>
-  <div id="searching" align="left"></div>
-  <table>
-    <thead>
-      <tr>
-        <th width="200">IP</th>
-        <th width="70">Time</th>
-        <th width="70">Time</th>
-      </tr>
-    </thead>
-    <tbody id="result">
-    </tbody>
-  </table>
+  <div class="main-container">
+    <div class="grid-item1">
+      <span class="option-title">Timeout:</span>
+      <select class="list_btn">
+        <option value="" selected>Default</option>
+        <option value="1000">1000 ms</option>
+        <option value="1000">2000 ms</option>
+        <option value="1000">4000 ms</option>
+        <option value="1000">6000 ms</option>
+        <option value="1000">8000 ms</option>
+      </select>
+    </div>
+    <div class="grid-item2">
+      <span class="option-title">Search IPs:</span>
+      <select class="list_btn">
+        <option value="" selected>Default</option>
+        <option value="1000">200</option>
+        <option value="1000">500</option>
+        <option value="1000">1000</option>
+        <option value="1000">5000</option>
+        <option value="1000">10000</option>
+      </select>
+    </div>
+    <div class="grid-item3">
+      <span class="option-title">Max Results:</span>
+      <select class="list_btn">
+        <option value="" selected>Default</option>
+        <option value="1000">10</option>
+        <option value="1000">20</option>
+        <option value="1000">30</option>
+        <option value="1000">40</option>
+        <option value="1000">50</option>
+      </select>
+    </div>
+    <div class="grid-item4">
+      <button class="start-scan">Start</button>
+    </div>
+    <div class="grid-item5">
+      <div class="progress-bar-border">
+        <div class="progress-bar">20%</div>
+      </div>
+    </div>
+    <div class="grid-item6 best-result-box">
+        <table>
+          <tbody>
+            <tr>
+              <td><b>Best IP</b></td>
+              <td>12.12.10.10</td>
+              <td>England</td>
+              <td>1200 ms</td>
+              <td><button class="copy-btn" title="Copy to clipboard"></button></td>
+            </tr>
+          </tbody>
+        </table>
+    </div>
+    <div class="grid-item7 result-box">
+      <strong>All Results:</strong>
+        <table>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>122.125.102.101</td>
+              <td>Worldwide</td>
+              <td>1200 ms</td>
+              <td><button class="copy-btn" title="Copy to clipboard"></button></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>12.125.12.101</td>
+              <td>England</td>
+              <td>1200 ms</td>
+              <td><button class="copy-btn" title="Copy to clipboard"></button></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>12.125.12.101</td>
+              <td>England</td>
+              <td>1200 ms</td>
+              <td><button class="copy-btn" title="Copy to clipboard"></button></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>12.125.12.101</td>
+              <td>England</td>
+              <td>1200 ms</td>
+              <td><button class="copy-btn" title="Copy to clipboard"></button></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>12.125.12.101</td>
+              <td>England</td>
+              <td>1200 ms</td>
+              <td><button class="copy-btn" title="Copy to clipboard"></button></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>12.125.12.101</td>
+              <td>England</td>
+              <td>1200 ms</td>
+              <td><button class="copy-btn" title="Copy to clipboard"></button></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>12.125.12.101</td>
+              <td>England</td>
+              <td>1200 ms</td>
+              <td><button class="copy-btn" title="Copy to clipboard"></button></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>12.125.12.101</td>
+              <td>England</td>
+              <td>1200 ms</td>
+              <td><button class="copy-btn" title="Copy to clipboard"></button></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>12.125.12.101</td>
+              <td>England</td>
+              <td>1200 ms</td>
+              <td><button class="copy-btn" title="Copy to clipboard"></button></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>12.125.12.101</td>
+              <td>England</td>
+              <td>1200 ms</td>
+              <td><button class="copy-btn" title="Copy to clipboard"></button></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>12.125.12.101</td>
+              <td>England</td>
+              <td>1200 ms</td>
+              <td><button class="copy-btn" title="Copy to clipboard"></button></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>12.125.12.101</td>
+              <td>England</td>
+              <td>1200 ms</td>
+              <td><button class="copy-btn" title="Copy to clipboard"></button></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>12.125.12.101</td>
+              <td>England</td>
+              <td>1200 ms</td>
+              <td><button class="copy-btn" title="Copy to clipboard"></button></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>12.125.12.101</td>
+              <td>England</td>
+              <td>1200 ms</td>
+              <td><button class="copy-btn" title="Copy to clipboard"></button></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>12.125.12.101</td>
+              <td>England</td>
+              <td>1200 ms</td>
+              <td><button class="copy-btn" title="Copy to clipboard"></button></td>
+            </tr>
+          </tbody>
+          <thead>
+            <tr>
+              <th>No.</th>
+              <th>IP</th>
+              <th>Location</th>
+              <th>Latency</th>
+              <th title="Download Results"></th>
+            </tr>
+          </thead>
+        </table>
+    </div>
+    <div class="grid-item8">
+      <!--Reserved for "Pervious results" section-->
+    </div>
+  </div> 
   <script type="text/javascript" src="cis.js"></script>
 </body>
 </html>
