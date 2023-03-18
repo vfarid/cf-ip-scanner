@@ -2,6 +2,12 @@
     box-sizing: border-box;
     font-size: 14px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    cursor: default;
+    border-radius: 4px;
+}
+body {
+    counter-reset: test;
+    background-color: #415260;
 }
 
 /*Custom scrollbar*/
@@ -32,74 +38,66 @@
     display: grid;
     gap: 0px 20px;
     align-content: flex-start;
+    background-color: #fff;
 }
 
-.main-container > div {
-    margin: 10px 0;
-}
-
+/*Divide main container*/
 .grid-item1 {grid-area: 1/1 / 1/2;}
 .grid-item2 {grid-area: 1/2 / 2/3;}
 .grid-item3 {grid-area: 1/3 / 2/4;}
 .grid-item4 {grid-area: 2/1 / 3/2;}
 .grid-item5 {grid-area: 2/2 / 3/4;}
 .grid-item6 {grid-area: 3/1 / 4/4;}
-.grid-item7 {grid-area: 4/1 / 7/4;}
-.grid-item8 {grid-area: 7/1 / 10/4;}
+.grid-item7 {grid-area: 4/1 / 5/4;}
+.grid-item8 {grid-area: 5/1 / 8/4;}
+.grid-item9 {grid-area: 8/1 / 11/4;}
+.main-container > div {
+    margin: 10px 0;
+}
 
-/*Style list button*/
+/*Style lists and buttons buttons*/
 .list_btn {
-    text-align: left;
     width: 100%;
     height: 30px;
-    background-color: whitesmoke;
     outline: 0;
-    border: none;
     border: 2px royalblue solid;
-    border-radius: 2px;
-    transition: box-shadow 0.25s;
+    transition: box-shadow 0.2s;
 }
 .list_btn:focus {
     box-shadow: 0px 0px 5px 1px royalblue;
 }
-
-.start-scan {
+.start-scan-btn {
     height: 30px;
     width: 50%;
     border: 2px royalblue solid;
-    border-radius: 2px;
     transition: border 0.25s;
     line-height: 0;
 }
-.start-scan:active {
+.start-scan-btn:active {
     transform: scale(0.97, 0.97);
     box-shadow: 0px 0px 5px 1px royalblue;
 }
+
 .progress-bar-border {
     width: 100%;
     height: 30px;
     background-color: #ddd;
     border: 1px #aaa solid;
-    border-radius: 0px;
 }
 .progress-bar {
-    width: 50%;
+    width: 0%;
     height: 100%;
     text-align: center;
-    font-size: 18px;
+    font-size: 14px;
+    line-height: 28px;
     color: white;
-    background-image: linear-gradient(
-        45deg, dodgerblue 25%, 
-        royalblue 25%, royalblue 50%, 
-        dodgerblue 50%, dodgerblue 75%,
-        royalblue 75%, royalblue);
-    background-size: 100%;
-    background-repeat: no-repeat;
+    background-color: #309C21;
+    transition: width 0.2s;
 }
 
 .best-result-box {
     padding: 5px;
-    box-shadow: 0px 0px 8px #888;
+    box-shadow: 0px 5px 15px #888;
 }
 .result-box {
     padding: 5px;
@@ -109,20 +107,18 @@
 
 .copy-btn {
     border: 0;
-    background-image: url(icons/copy.svg);
+    background-image: url(assets/copy.svg);
     background-repeat: no-repeat;
     background-size: contain;
     background-position: 50%;
     width: 20px;
     height: 20px;
+    cursor: pointer;
 }
 .copy-btn:active {
     background-color: #ccc;
 }
-.copy-btn:hover {
-    cursor: pointer;
-}
-.copy-btn:focus::after{
+.copy-btn:focus::before{
     content: "✔️";
 }
 
@@ -134,19 +130,18 @@ th, td {
 }
 th:last-child {
     text-align: center;
-    background-image: url(icons/download.svg);
+    background-image: url(assets/download.svg);
     background-repeat: no-repeat;
     background-size: contain;
     background-position: 50%;
     width: 20px;
     height: 20px;
     margin-left: 20px;
-}
-th:last-child:hover {
     cursor: pointer;
 }
-td:nth-child(4) {
-   color: red;
+#all-table tr td:first-child::before { /*Numbering IPs*/
+    counter-increment: test;
+    content: counter(test);
 }
 
 @media only screen and (min-width: 600px) {

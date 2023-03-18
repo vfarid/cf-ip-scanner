@@ -3,172 +3,62 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <link rel="stylesheet" href="cis.css">
+  <script src="all_IPs.js"></script>
 </head>
 <body>
   <div class="main-container">
     <div class="grid-item1">
       <span class="option-title">Timeout:</span>
-      <select class="list_btn">
-        <option value="" selected>Default</option>
+      <select id="timeout-list" class="list_btn">
         <option value="1000">1000 ms</option>
-        <option value="1000">2000 ms</option>
-        <option value="1000">4000 ms</option>
-        <option value="1000">6000 ms</option>
-        <option value="1000">8000 ms</option>
+        <option value="2000" selected>2000 ms</option>
+        <option value="4000">4000 ms</option>
+        <option value="6000">6000 ms</option>
+        <option value="8000">8000 ms</option>
       </select>
     </div>
     <div class="grid-item2">
-      <span class="option-title">Search IPs:</span>
-      <select class="list_btn">
-        <option value="" selected>Default</option>
-        <option value="1000">200</option>
-        <option value="1000">500</option>
-        <option value="1000">1000</option>
+      <span class="option-title">Max IP Scan:</span>
+      <select id="scan-ip-list" class="list_btn">
+        <option value="200">1000</option>
+        <option value="500" selected>2000</option>
         <option value="1000">5000</option>
-        <option value="1000">10000</option>
+        <option value="5000">20000</option>
+        <option value="100000">100000+</option>
       </select>
     </div>
     <div class="grid-item3">
-      <span class="option-title">Max Results:</span>
-      <select class="list_btn">
-        <option value="" selected>Default</option>
-        <option value="1000">10</option>
-        <option value="1000">20</option>
-        <option value="1000">30</option>
-        <option value="1000">40</option>
-        <option value="1000">50</option>
+      <span class="option-title">Max IP Results:</span>
+      <select id="results-list" class="list_btn">
+        <option value="10">10</option>
+        <option value="20" selected>20</option>
+        <option value="30">30</option>
+        <option value="40">40</option>
+        <option value="50">50</option>
       </select>
     </div>
     <div class="grid-item4">
-      <button class="start-scan">Start</button>
+      <button class="start-scan-btn">Start</button>
     </div>
     <div class="grid-item5">
       <div class="progress-bar-border">
-        <div class="progress-bar">20%</div>
+        <div class="progress-bar"></div>
       </div>
     </div>
-    <div class="grid-item6 best-result-box">
+    <div class="grid-item6">
+      <span class="status"></span>
+    </div>
+    <div class="grid-item7 best-result-box">
+      <strong>Best IP:</strong>
         <table>
-          <tbody>
-            <tr>
-              <td><b>Best IP</b></td>
-              <td>12.12.10.10</td>
-              <td>England</td>
-              <td>1200 ms</td>
-              <td><button class="copy-btn" title="Copy to clipboard"></button></td>
-            </tr>
+          <tbody id="best-table">
           </tbody>
         </table>
     </div>
-    <div class="grid-item7 result-box">
+    <div class="grid-item8 result-box">
       <strong>All Results:</strong>
         <table>
-          <tbody>
-            <tr>
-              <td>1</td>
-              <td>122.125.102.101</td>
-              <td>Worldwide</td>
-              <td>1200 ms</td>
-              <td><button class="copy-btn" title="Copy to clipboard"></button></td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>12.125.12.101</td>
-              <td>England</td>
-              <td>1200 ms</td>
-              <td><button class="copy-btn" title="Copy to clipboard"></button></td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>12.125.12.101</td>
-              <td>England</td>
-              <td>1200 ms</td>
-              <td><button class="copy-btn" title="Copy to clipboard"></button></td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>12.125.12.101</td>
-              <td>England</td>
-              <td>1200 ms</td>
-              <td><button class="copy-btn" title="Copy to clipboard"></button></td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>12.125.12.101</td>
-              <td>England</td>
-              <td>1200 ms</td>
-              <td><button class="copy-btn" title="Copy to clipboard"></button></td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>12.125.12.101</td>
-              <td>England</td>
-              <td>1200 ms</td>
-              <td><button class="copy-btn" title="Copy to clipboard"></button></td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>12.125.12.101</td>
-              <td>England</td>
-              <td>1200 ms</td>
-              <td><button class="copy-btn" title="Copy to clipboard"></button></td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>12.125.12.101</td>
-              <td>England</td>
-              <td>1200 ms</td>
-              <td><button class="copy-btn" title="Copy to clipboard"></button></td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>12.125.12.101</td>
-              <td>England</td>
-              <td>1200 ms</td>
-              <td><button class="copy-btn" title="Copy to clipboard"></button></td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>12.125.12.101</td>
-              <td>England</td>
-              <td>1200 ms</td>
-              <td><button class="copy-btn" title="Copy to clipboard"></button></td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>12.125.12.101</td>
-              <td>England</td>
-              <td>1200 ms</td>
-              <td><button class="copy-btn" title="Copy to clipboard"></button></td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>12.125.12.101</td>
-              <td>England</td>
-              <td>1200 ms</td>
-              <td><button class="copy-btn" title="Copy to clipboard"></button></td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>12.125.12.101</td>
-              <td>England</td>
-              <td>1200 ms</td>
-              <td><button class="copy-btn" title="Copy to clipboard"></button></td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>12.125.12.101</td>
-              <td>England</td>
-              <td>1200 ms</td>
-              <td><button class="copy-btn" title="Copy to clipboard"></button></td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>12.125.12.101</td>
-              <td>England</td>
-              <td>1200 ms</td>
-              <td><button class="copy-btn" title="Copy to clipboard"></button></td>
-            </tr>
+          <tbody id="all-table">
           </tbody>
           <thead>
             <tr>
@@ -176,12 +66,12 @@
               <th>IP</th>
               <th>Location</th>
               <th>Latency</th>
-              <th title="Download Results"></th>
+              <th title="Download Results" class="download-btn"></th>
             </tr>
           </thead>
         </table>
     </div>
-    <div class="grid-item8">
+    <div class="grid-item9">
       <!--Reserved for "Pervious results" section-->
     </div>
   </div> 
