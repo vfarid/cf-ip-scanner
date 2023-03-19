@@ -398,20 +398,19 @@ function downloadAsCSV() {
   document.body.removeChild(link);
 }
 
-function copyToClipboard(event) {
-  const ip = event.target.innerText;
-  
-  navigator.clipboard.writeText(ip).then(() => {
-    alert(`${ip} copied to clipboard!`);
-  }).catch(() => {
-    console.error(`Failed to copy ${ip} to clipboard!`);
-  });
-}
-
-const resultTable = document.getElementById('result');
-resultTable.addEventListener('click', (event) => {
-  if (event.target.tagName === 'TD' && event.target.previousElementSibling != null) {
-    copyToClipboard(event);
+//Copy to Clipboard
+document.getElementById('result').addEventListener('click', (event) => {
+  const clickedElement = event.target;
+  if (clickedElement.tagName === 'TD') {
+    const clickedRow = clickedElement.parentNode;
+    const ipAddress = clickedRow.cells[1].innerText;
+    navigator.clipboard.writeText(ipAddress)
+      .then(() => {
+        alert(`Copied ${ipAddress} to clipboard`);
+      })
+      .catch((error) => {
+        console.error(`Failed to copy ${ipAddress} to clipboard: ${error}`);
+      });
   }
-}); 
+});
 </script>
