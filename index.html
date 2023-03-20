@@ -53,6 +53,9 @@
       counter-increment: Serial;
       content: counter(Serial);
     }
+    table.list tr td:last-child, th:last-child {
+      text-align: left;
+    }
     div.scan-finished {
 /*      display: none;*/
     }
@@ -135,53 +138,6 @@
       <tbody id="result">
       </tbody>
     </table>
-<!--
-    <table dir="rtl" class="content">
-      <tr>
-        <td colspan="2" align="center" style="border-bottom: 1px solid #666;">
-          <strong>بارگزاری آی‌پی‌ها در کلادفلر</strong>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          ایمیل:
-        </td>
-        <td>
-          <input type="text" id="cf-email" placeholder="my-name@gmail.com" />
-        </td>
-      </tr>
-      <tr>
-        <td>
-          API Key:
-        </td>
-        <td>
-          <input type="text" id="cf-api-key" />
-        </td>
-      </tr>
-      <tr>
-        <td>
-          Zone ID:
-        </td>
-        <td>
-          <input type="text" id="cf-zone-id" />
-        </td>
-      </tr>
-      <tr>
-        <td>
-          سابدامین:
-        </td>
-        <td>
-          <input type="text" id="cf-subdomain" placeholder="ip.my-domain.top" />
-        </td>
-      </tr>
-      <tr>
-        <td colspan="2">
-          <button class="start" style="float: right" onclick="clearData()">حذف اطلاعات ورود</button>
-          <button class="start" onclick="updateDNS()">آپدیت سابدامین</button>
-        </td>
-      </tr>
-    </table>
- -->
   </div>
 </body>
 </html>
@@ -397,10 +353,6 @@ let includeUK;
 document.getElementById('max-ip').value = localStorage.getItem('max-ip') || 5;
 document.getElementById('max-latency').value = localStorage.getItem('max-latency') || 1000;
 document.getElementById('uk-cdn').checked = localStorage.getItem('include-uk') == 'true';
-document.getElementById('cf-email').value = localStorage.getItem('cf-email');
-document.getElementById('cf-api-key').value = localStorage.getItem('cf-api-key');
-document.getElementById('cf-zone-id').value = localStorage.getItem('cf-zone-id');
-document.getElementById('cf-subdomain').value = localStorage.getItem('cf-subdomain');
 
 function startScan() {
   document.getElementById('start-hint').style.display='none';
@@ -427,65 +379,6 @@ function startScan() {
     }
   }
   testIPs(randomizeElements(ips));
-}
-
-function updateDNS() {
-  const cfEmail = document.getElementById('cf-email').value;
-  const cfAPIKey = document.getElementById('cf-api-key').value;
-  const cfZoneId = document.getElementById('cf-zone-id').value;
-  const cfSubdomain = document.getElementById('cf-subdomain').value;
-
-  localStorage.setItem('cf-email', cfEmail);
-  localStorage.setItem('cf-api-key', cfAPIKey);
-  localStorage.setItem('cf-zone-id', cfZoneId);
-  localStorage.setItem('cf-subdomain', cfSubdomain);
-
-  const defaultHeaders = {
-    'Content-Type': 'application/json',
-    'X-Auth-Email': cfEmail,
-    'X-Auth-Key': cfAPIKey,
-    'mode': 'no-cors'
-  };
-
-  // First, we need to get all the existing A records for the subdomain
-  fetch(`https://api.cloudflare.com/client/v4/zones/${cfZoneId}/dns_records?type=A&name=${cfSubdomain}`, {
-    method: 'GET',
-    headers: defaultHeaders
-  })
-    .then(response => response.json())
-    .then(data => {
-      // Extract the IDs of all the A records for the subdomain
-      const aRecordIds = data.result.map(record => record.id);
-
-      // Delete all the existing A records for the subdomain
-      return Promise.all(aRecordIds.map(recordId =>
-        fetch(`https://api.cloudflare.com/client/v4/zones/${cfZoneId}/dns_records/${recordId}`, {
-          method: 'DELETE',
-          headers: defaultHeaders
-        })
-      ));
-    })
-    .then(() => {
-      // Add a new A record for the subdomain
-      return fetch(`https://api.cloudflare.com/client/v4/zones/${cfZoneId}/dns_records`, {
-        method: 'POST',
-        headers: defaultHeaders,
-        body: JSON.stringify({
-          type: 'A',
-          name: `${cfSubdomain}`,
-          content: '1.2.3.4',
-          ttl: 1,
-          proxied: false,
-        }),
-      });
-    })
-    .then(response => response.json())
-    .then(data => {
-      alert('بارگزاری آی‌پی‌ها در کلادفلر انجام شد.');
-    })
-    .catch(error => {
-      alert('خطا در بارگزاری آی‌پی‌ها در کلادفلر!');
-    });
 }
 
 async function testIPs(ipList) {
