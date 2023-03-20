@@ -1,74 +1,185 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta charset="utf8">
+  <link href="https://fonts.cdnfonts.com/css/iranian-sans" rel="stylesheet">
   <style type="text/css">
     body {
-      font-family: "Lucida Grande";
-      font-size: 16px;
-      background: #666;
+      font-family: 'Iranian Sans', sans-serif;
+      font-size: 12px;
+      background: #888;
       counter-reset: Serial;
+      direction: rtl;
+      margin: 0;
+    }
+    a {
+      color: #000;
+      text-decoration-line: none;
     }
     p {
       margin: 0;
       padding: 5px;
     }
     table {
+      font-size: 12px;
+      width: 100%;
       border-collapse:collapse;
     }
     th {
       background: #aaa;
-      padding: 5px 2px;
-      text-align: left;
+      padding: 10px 2px;
+      height: 44px;
+      font-weight: normal;
+      text-align: right;
     }
-    tr:nth-child(odd) td {
+    table.content td {
+      background: #ddd;
+      height: 20px;
+      padding: 8px;
+    }
+    table.list tr:nth-child(odd) td {
       background: #ddd;
     }
-    tr:nth-child(even) td {
+    table.list tr:nth-child(even) td {
       background: #ccc;
     }
-    tr:last-child td {
+    table.list tr:last-child td {
       border-bottom: 2px solid #666;
     }
     td {
       padding: 2px;
     }
-    tr td:first-child:before {
+    table.list tr td:first-child:before {
       counter-increment: Serial;
       content: counter(Serial);
+    }
+    div.scan-finished {
+/*      display: none;*/
+    }
+    div.text-div {
+      background-color: #ddd;
+      width: 340px;
+      height: 20px;
+      padding: 10px;
+    }
+    input[type=number] {
+      width: 60px;
+    }
+    input[type=text] {
+      width: 250px;
+    }
+    button.start{
+      width: 150px;
+      font-size: 16px;
+      font-weight: bold;
+      color: green;
+      padding: 2px;
+      float: left;
     }
   </style>
 </head>
 <body>
-  <div style="padding: 10px; margin: auto; width: 400px;">
-    <div style="background-color: #ddd; width: 380px; height: 20px; padding: 10px;">
-      <div style="width: 100px; float: left;"><span id="test-no"></span></div>
-      <div style="width: 150px; float: left;"><span id="ip-no"></span></div>
-      <div style="width: 30px; float: left;"><span id="ip-try"></span></div>
+  <div style="padding: 0; margin: auto; width: 360px;">
+    <table dir="rtl" class="content">
+      <tr>
+        <td colspan="2" align="center" style="border-bottom: 1px solid #666;">
+          <strong>پیدا کردن آی‌پی تمیز کلادفلر</strong>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label>تعداد آی‌پی: <input type="number" id="max-ip" min="1" max="500" /></label>
+        </td>
+        <td>
+          <label>تاخیر مجاز: <input type="number" id="max-latency" min="300" max="3000" step="50"/></label>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label>استفاده از آدرس لندن: <input id="london-cdn" type="checkbox" /></label>
+        </td>
+        <td>
+          <button class="start" onclick="startScan()">شروع</button>
+        </td>
+      </tr>
+    </table>
+    <div class="text-div" style="border-top: 1px solid #666;">
+      <div id="start-hint" style="color: red;">قبل از شروع vpn خود را خاموش کنید!</div>
+      <div style="width: 110px; float: right;"><span id="test-no"></span></div>
+      <div style="width: 120px; float: right;"><span id="ip-no"></span></div>
+      <div style="width: 30px; float: right;"><span id="ip-try"></span></div>
+      <div style="width: 60px; float: right;"><span id="ip-latency"></span></div>
     </div>
-    <form>
-      <table>
-        <thead>
-          <tr>
-            <th width="35">
-              #
-            </th>
-            <th width="200">
-              IP
-            </th>
-            <th width="100">
-              Latency
-            </th>
-            <th width="50">
-              <a id="download-link" href="#" onclick="downloadAsCSV()">
-                <img height="20px" src="assets/download.png" />
-              </a>
-            </th>
-          </tr>
-        </thead>
-        <tbody id="result">
-        </tbody>
-      </table>
-    </form>
+    <table class="list">
+      <thead>
+        <tr>
+          <th width="35">
+            #
+          </th>
+          <th width="150">
+            آی پی
+          </th>
+          <th width="80">
+            تاخیر
+          </th>
+          <th width="60">
+            <a class="download-link" href="#" onclick="downloadAsCSV()">
+              <img height="24px" src="assets/excel.png" />
+            </a>
+            <a class="download-link" href="#" onclick="downloadAsJSON()">
+              <img height="24px" src="assets/json.png" />
+            </a>
+          </th>
+        </tr>
+      </thead>
+      <tbody id="result">
+      </tbody>
+    </table>
+    <table dir="rtl" class="content">
+      <tr>
+        <td colspan="2" align="center" style="border-bottom: 1px solid #666;">
+          <strong>بارگزاری آی‌پی‌ها در کلادفلر</strong>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          ایمیل:
+        </td>
+        <td>
+          <input type="text" id="cf-email" placeholder="my-name@gmail.com" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          API Key:
+        </td>
+        <td>
+          <input type="text" id="cf-api-key" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Zone ID:
+        </td>
+        <td>
+          <input type="text" id="cf-zone-id" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          سابدامین:
+        </td>
+        <td>
+          <input type="text" id="cf-subdomain" placeholder="ip.my-domain.top" />
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <button class="start" style="float: right" onclick="clearData()">حذف اطلاعات ورود</button>
+          <button class="start" onclick="updateDNS()">آپدیت سابدامین</button>
+        </td>
+      </tr>
+    </table>
   </div>
 </body>
 </html>
@@ -274,30 +385,108 @@ const cfIPv4 = {
   ]
 };
 
-const urlParams = new URLSearchParams(window.location.search);
+let maxIP;
+let testNo;
+let validIPs;
+let maxLatency;
+let numberOfWorkingIPs;
+let includeLondon;
 
-let maxIP = urlParams.get('max')
-let testNo = 0;
-let validIPs = [];
+document.getElementById('max-ip').value = localStorage.getItem('max-ip') || 5;
+document.getElementById('max-latency').value = localStorage.getItem('max-latency') || 1000;
+document.getElementById('london-cdn').checked = localStorage.getItem('include-london') == 'true';
+document.getElementById('cf-email').value = localStorage.getItem('cf-email');
+document.getElementById('cf-api-key').value = localStorage.getItem('cf-api-key');
+document.getElementById('cf-zone-id').value = localStorage.getItem('cf-zone-id');
+document.getElementById('cf-subdomain').value = localStorage.getItem('cf-subdomain');
 
-if (maxIP === null) {
-  maxIP = 20
-} else {
-  maxIP = ~~maxIP;
-}
+function startScan() {
+  document.getElementById('start-hint').style.display='none';
 
-var ips = [];
-let numberOfWorkingIPs = 0;
+  maxIP = ~~document.getElementById('max-ip').value;
+  maxLatency = ~~document.getElementById('max-latency').value;
+  includeLondon = !!document.getElementById('london-cdn').checked;
 
-for (const cdnLocation in cfIPv4) {
-  for (const cidr of cfIPv4[cdnLocation]) {
-    ips = ips.concat(cidrToIpArray(cidr, cdnLocation));
+  localStorage.setItem('max-ip', maxIP);
+  localStorage.setItem('max-latency', maxLatency);
+  localStorage.setItem('include-london', includeLondon);
+
+  testNo = 0;
+  numberOfWorkingIPs = 0;
+  validIPs = [];
+
+  var ips = [];
+  for (const cdnLocation in cfIPv4) {
+    if (!includeLondon && cdnLocation === 'London') {
+      continue;
+    }
+    for (const cidr of cfIPv4[cdnLocation]) {
+      ips = ips.concat(cidrToIpArray(cidr, cdnLocation));
+    }
   }
+  testIPs(randomizeElements(ips));
 }
-testIPs(randomizeElements(ips));
+
+function updateDNS() {
+  const cfEmail = document.getElementById('cf-email').value;
+  const cfAPIKey = document.getElementById('cf-api-key').value;
+  const cfZoneId = document.getElementById('cf-zone-id').value;
+  const cfSubdomain = document.getElementById('cf-subdomain').value;
+
+  localStorage.setItem('cf-email', cfEmail);
+  localStorage.setItem('cf-api-key', cfAPIKey);
+  localStorage.setItem('cf-zone-id', cfZoneId);
+  localStorage.setItem('cf-subdomain', cfSubdomain);
+
+  const defaultHeaders = {
+    'Content-Type': 'application/json',
+    'X-Auth-Email': cfEmail,
+    'X-Auth-Key': cfAPIKey,
+    'mode': 'no-cors'
+  };
+
+  // First, we need to get all the existing A records for the subdomain
+  fetch(`https://api.cloudflare.com/client/v4/zones/${cfZoneId}/dns_records?type=A&name=${cfSubdomain}`, {
+    method: 'GET',
+    headers: defaultHeaders
+  })
+    .then(response => response.json())
+    .then(data => {
+      // Extract the IDs of all the A records for the subdomain
+      const aRecordIds = data.result.map(record => record.id);
+
+      // Delete all the existing A records for the subdomain
+      return Promise.all(aRecordIds.map(recordId =>
+        fetch(`https://api.cloudflare.com/client/v4/zones/${cfZoneId}/dns_records/${recordId}`, {
+          method: 'DELETE',
+          headers: defaultHeaders
+        })
+      ));
+    })
+    .then(() => {
+      // Add a new A record for the subdomain
+      return fetch(`https://api.cloudflare.com/client/v4/zones/${cfZoneId}/dns_records`, {
+        method: 'POST',
+        headers: defaultHeaders,
+        body: JSON.stringify({
+          type: 'A',
+          name: `${cfSubdomain}`,
+          content: '1.2.3.4',
+          ttl: 1,
+          proxied: false,
+        }),
+      });
+    })
+    .then(response => response.json())
+    .then(data => {
+      alert('بارگزاری آی‌پی‌ها در کلادفلر انجام شد.');
+    })
+    .catch(error => {
+      alert('خطا در بارگزاری آی‌پی‌ها در کلادفلر!');
+    });
+}
 
 async function testIPs(ipList) {
-  const timeout = 2500;
   for (const el of ipList) {
     testNo++;
     var testResult = 0;
@@ -305,20 +494,25 @@ async function testIPs(ipList) {
     const startTime = performance.now();
     const controller = new AbortController();
 
+    var timeout = 2 * maxLatency;
+    var chNo = 0;
     for (const ch of ['', '|', '/', '-', '\\']) {
       const timeoutId = setTimeout(() => {
         controller.abort();
       }, timeout);
       if (ch) {
-        document.getElementById('test-no').innerText = `Test #${testNo}:`;
+        document.getElementById('test-no').innerText = `تست شماره ${testNo}:`;
         document.getElementById('ip-no').innerText = el.ip;
         document.getElementById('ip-no').style = `color: green`;
         document.getElementById('ip-try').innerText = ch;
+        document.getElementById('ip-latency').innerText = Math.floor((performance.now() - startTime) / chNo) + 'ms';
       } else {
-        document.getElementById('test-no').innerText = `Test #${testNo}:`;
+        timeout = 1.5 * maxLatency;
+        document.getElementById('test-no').innerText = `تست شماره ${testNo}:`;
         document.getElementById('ip-no').innerText = el.ip;
         document.getElementById('ip-no').style = `color: red`;
-        document.getElementById('ip-try').innerText = ch;
+        document.getElementById('ip-try').innerText = '';
+        document.getElementById('ip-latency').innerText = '';
       }
       try {
         const response = await fetch(url, {
@@ -334,26 +528,28 @@ async function testIPs(ipList) {
         }
       }
       clearTimeout(timeoutId);
+      chNo++;
     }
 
-    const duration = performance.now() - startTime;
+    const latency = Math.floor((performance.now() - startTime) / 5);
 
-    if (testResult === 5) {
+    if (testResult === 5 && latency <= maxLatency) {
       numberOfWorkingIPs++;
-      validIPs.push({ip: el.ip, location: el.location, time: Math.floor(duration / 5)});
-      const sortedArr = validIPs.sort((a, b) => a.time - b.time);
-      const tableRows = sortedArr.map(obj => `<tr><td></td><td>${obj.ip}</td><td>${obj.time}ms</td><td><img height="20px" src="assets/${obj.location}.png" /></td></tr>`).join('\n');
+      validIPs.push({ip: el.ip, location: el.location, latency: latency});
+      const sortedArr = validIPs.sort((a, b) => a.latency - b.latency);
+      const tableRows = sortedArr.map(obj => `<tr><td></td><td>${obj.ip}</td><td>${obj.latency}ms</td><td><img height="20px" src="assets/${obj.location}.png" /></td></tr>`).join('\n');
       document.getElementById('result').innerHTML = tableRows;
     }
 
-    if (maxIP > 0 && numberOfWorkingIPs >= maxIP) {
+    if (numberOfWorkingIPs >= maxIP) {
       break;
     }
   }
-  document.getElementById('test-no').innerText = `DONE`;
+  document.getElementById('test-no').innerText = `پایان`;
   document.getElementById('test-no').style = `color: green; font-weight: bold;`;
   document.getElementById('ip-no').innerText = '';
   document.getElementById('ip-try').innerText = '';
+  document.getElementById('ip-latency').innerText = '';
 }
 
 
@@ -392,6 +588,19 @@ function downloadAsCSV() {
   const link = document.createElement('a');
   link.setAttribute('href', url);
   link.setAttribute('download', 'ip-list.csv');
+  link.style.display = 'none';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+function downloadAsJSON() {
+  const jsonString = JSON.stringify(validIPs.map(el => el.ip), null, 2);
+  const blob = new Blob([jsonString], { type: 'application/json;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.setAttribute('href', url);
+  link.setAttribute('download', 'ip-list.json');
   link.style.display = 'none';
   document.body.appendChild(link);
   link.click();
