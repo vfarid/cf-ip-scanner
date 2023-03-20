@@ -96,7 +96,7 @@
       </tr>
       <tr>
         <td>
-          <label>استفاده از آدرس لندن: <input id="london-cdn" type="checkbox" /></label>
+          <label>استفاده از آدرس لندن: <input id="uk-cdn" type="checkbox" /></label>
         </td>
         <td>
           <button class="start" onclick="startScan()">شروع</button>
@@ -188,7 +188,7 @@
 
 <script type="text/javascript">
 const cfIPv4 = {
-  London: [
+  uk: [
     '5.226.179.0/24',
     // '5.226.181.0/24',
     '8.12.10.0/24',
@@ -368,7 +368,7 @@ const cfIPv4 = {
     '212.239.86.0/24',
     '216.120.180.0/23'
   ],
-  Worldwide: [
+  international: [
     '173.245.48.0/20',
     '103.21.244.0/22',
     '103.22.200.0/22',
@@ -392,11 +392,11 @@ let testNo;
 let validIPs;
 let maxLatency;
 let numberOfWorkingIPs;
-let includeLondon;
+let includeUK;
 
 document.getElementById('max-ip').value = localStorage.getItem('max-ip') || 5;
 document.getElementById('max-latency').value = localStorage.getItem('max-latency') || 1000;
-document.getElementById('london-cdn').checked = localStorage.getItem('include-london') == 'true';
+document.getElementById('uk-cdn').checked = localStorage.getItem('include-uk') == 'true';
 document.getElementById('cf-email').value = localStorage.getItem('cf-email');
 document.getElementById('cf-api-key').value = localStorage.getItem('cf-api-key');
 document.getElementById('cf-zone-id').value = localStorage.getItem('cf-zone-id');
@@ -407,11 +407,11 @@ function startScan() {
 
   maxIP = ~~document.getElementById('max-ip').value;
   maxLatency = ~~document.getElementById('max-latency').value;
-  includeLondon = !!document.getElementById('london-cdn').checked;
+  includeUK = !!document.getElementById('uk-cdn').checked;
 
   localStorage.setItem('max-ip', maxIP);
   localStorage.setItem('max-latency', maxLatency);
-  localStorage.setItem('include-london', includeLondon);
+  localStorage.setItem('include-uk', includeUK);
 
   testNo = 0;
   numberOfWorkingIPs = 0;
@@ -419,7 +419,7 @@ function startScan() {
 
   var ips = [];
   for (const cdnLocation in cfIPv4) {
-    if (!includeLondon && cdnLocation === 'London') {
+    if (!includeUK && cdnLocation === 'uk') {
       continue;
     }
     for (const cidr of cfIPv4[cdnLocation]) {
@@ -539,7 +539,16 @@ async function testIPs(ipList) {
       numberOfWorkingIPs++;
       validIPs.push({ip: el.ip, location: el.location, latency: latency});
       const sortedArr = validIPs.sort((a, b) => a.latency - b.latency);
-      const tableRows = sortedArr.map(obj => `<tr><td></td><td>${obj.ip}</td><td>${obj.latency}ms</td><td><img height="20px" src="assets/${obj.location}.png" /></td></tr>`).join('\n');
+      const tableRows = sortedArr.map(obj => `
+        <tr>
+          <td></td>
+          <td>${obj.ip}</td>
+          <td>${obj.latency}ms</td>
+          <td>
+            <img height="20px" src="assets/${obj.location}.png" />
+            <img height="20px" src="assets/copy.png" onclick="copyToClipboard('${obj.ip}')"/>
+          </td>
+        </tr>`).join('\n');
       document.getElementById('result').innerHTML = tableRows;
     }
 
@@ -554,6 +563,13 @@ async function testIPs(ipList) {
   document.getElementById('ip-latency').innerText = '';
 }
 
+function copyToClipboard(ip) {
+  navigator.clipboard.writeText(ip).then(() => {
+    alert('آی‌پی‌ در کلیپ‌بورد کپی شد.');
+  }).catch(() => {
+    alert('مشکلی پیش آمده است!');
+  });
+}
 
 function cidrToIpArray(cidr, cdnLocation) {
   const parts = cidr.split('/');
@@ -580,7 +596,7 @@ function cidrToIpArray(cidr, cdnLocation) {
 }
 
 function randomizeElements(arr) {
-  return [...arr].sort((el1, el2) => {return el2.location === 'London' ? 0.75 - Math.random() : 0.5 - Math.random()});
+  return [...arr].sort((el1, el2) => {return el2.location === 'uk' ? 0.75 - Math.random() : 0.5 - Math.random()});
 }
 
 function downloadAsCSV() {
