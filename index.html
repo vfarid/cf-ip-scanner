@@ -98,6 +98,11 @@
         </td>
       </tr>
       <tr>
+        <td colspan="2">
+          <label>عبارت منظم: <input type="text" dir="ltr" id="ip-regex" placeholder="^104\.17\.|^141\." /></label>
+        </td>
+      </tr>
+      <tr>
         <td>
           <label>استفاده از آدرس لندن: <input id="uk-cdn" type="checkbox" /></label>
         </td>
@@ -349,10 +354,12 @@ let validIPs;
 let maxLatency;
 let numberOfWorkingIPs;
 let includeUK;
+let ipRegex;
 
 document.getElementById('max-ip').value = localStorage.getItem('max-ip') || 5;
 document.getElementById('max-latency').value = localStorage.getItem('max-latency') || 1000;
 document.getElementById('uk-cdn').checked = localStorage.getItem('include-uk') == 'true';
+document.getElementById('ip-regex').value = localStorage.getItem('ip-regex');
 
 function startScan() {
   document.getElementById('start-hint').style.display='none';
@@ -360,10 +367,12 @@ function startScan() {
   maxIP = ~~document.getElementById('max-ip').value;
   maxLatency = ~~document.getElementById('max-latency').value;
   includeUK = !!document.getElementById('uk-cdn').checked;
+  ipRegex = document.getElementById('ip-regex').value;
 
   localStorage.setItem('max-ip', maxIP);
   localStorage.setItem('max-latency', maxLatency);
   localStorage.setItem('include-uk', includeUK);
+  localStorage.setItem('ip-regex', ipRegex);
 
   testNo = 0;
   numberOfWorkingIPs = 0;
@@ -378,6 +387,13 @@ function startScan() {
       ips = ips.concat(cidrToIpArray(cidr, cdnLocation));
     }
   }
+
+  if (ipRegex) {
+    const regex = new RegExp(ipRegex);
+    ips = ips.filter(el => regex.test(el.ip));
+    console.log(regex, ips)
+  }
+
   testIPs(randomizeElements(ips));
 }
 
