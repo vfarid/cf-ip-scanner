@@ -391,7 +391,6 @@ function startScan() {
   if (ipRegex) {
     const regex = new RegExp(ipRegex);
     ips = ips.filter(el => regex.test(el.ip));
-    console.log(regex, ips)
   }
 
   testIPs(randomizeElements(ips));
