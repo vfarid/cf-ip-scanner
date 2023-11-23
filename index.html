@@ -2,6 +2,7 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta charset="utf8">
+  <title>Find Cloudflare's Fast IP</title>
   <link href="https://fonts.cdnfonts.com/css/iranian-sans" rel="stylesheet">
   <style type="text/css">
     body {
@@ -9,7 +10,7 @@
       font-size: 12px;
       background: #888;
       counter-reset: Serial;
-      direction: rtl;
+      direction: ltr;
       margin: 0;
     }
     a {
@@ -91,51 +92,51 @@
 </head>
 <body>
   <div style="padding: 0; margin: auto; width: 360px;">
-    <table dir="rtl" class="content">
+    <table dir="ltr" class="content">
       <tr>
         <td colspan="2" align="center" style="border-bottom: 1px solid #666;">
-          <strong>پیدا کردن آی‌پی تمیز کلادفلر</strong>
+          <strong>Find Cloudflare's Fast IP</strong>
         </td>
       </tr>
       <tr>
         <td>
-          <label>تعداد آی‌پی: <input type="number" id="max-ip" min="1" max="5000" /></label>
+          <label>Number of IPs: <input type="number" id="max-ip" min="1" max="5000" /></label>
         </td>
         <td>
-          <label>تاخیر مجاز: <input type="number" id="max-latency" min="50" max="3000" step="50"/></label>
+          <label>Max Delay (ms): <input type="number" id="max-latency" min="50" max="3000" step="50"/></label>
         </td>
       </tr>
       <tr>
         <td colspan="2">
-          <label>عبارت منظم: <input type="text" dir="ltr" id="ip-regex" placeholder="^104\.17\.|^141\." /></label>
+          <label>IP Regular Expression: <input type="text" dir="ltr" id="ip-regex" placeholder="^104\.17\.|^141\." /></label>
         </td>
       </tr>
       <tr>
         <td colspan="2">
-          <label>فقط از این رنج آی‌پی: <input type="text" dir="ltr" id="ip-include" placeholder="104.17,141" /></label>
+          <label>Only From This IP Range: <input type="text" dir="ltr" id="ip-include" placeholder="104.17,141" /></label>
         </td>
       </tr>
       <tr>
         <td colspan="2">
-          <label>شامل این رنج آی‌پی نشود: <input type="text" dir="ltr" id="ip-exclude" placeholder="8,103.22" /></label>
+          <label>Do NOT From This IP Range: <input type="text" dir="ltr" id="ip-exclude" placeholder="8,103.22" /></label>
         </td>
       </tr>
       <tr>
         <td>
-          <a href="ip-list.html" target="_blank">مشاهده‌ی رنج‌ها</a>
+          <a href="ip-list.html" target="_blank">Observation of Bad IPs.</a>
         </td>
         <td>
-          <button id="btn-start" class="start" onclick="startScan()">شروع</button>
-          <button id="btn-cancel" class="cancel" onclick="cancelScan()">لغو</button>
+          <button id="btn-start" class="start" onclick="startScan()">Start</button>
+          <button id="btn-cancel" class="cancel" onclick="cancelScan()">Cancel</button>
         </td>
       </tr>
     </table>
     <div class="text-div" style="border-top: 1px solid #666; background: white;">
-      <div id="start-hint" style="color: red;">قبل از شروع vpn خود را خاموش کنید!</div>
-      <div style="width: 110px; float: right;"><span id="test-no"></span></div>
-      <div style="width: 120px; float: right;"><span id="ip-no"></span></div>
-      <div style="width: 30px; float: right;"><span id="ip-try"></span></div>
-      <div style="width: 60px; float: right;"><span id="ip-latency"></span></div>
+      <div id="start-hint" style="color: red;">Turn OFF Your VPN Before Starting!</div>
+      <div style="width: 110px; float: left;"><span id="test-no"></span></div>
+      <div style="width: 120px; float: left;"><span id="ip-no"></span></div>
+      <div style="width: 30px; float: left;"><span id="ip-try"></span></div>
+      <div style="width: 60px; float: left;"><span id="ip-latency"></span></div>
     </div>
     <table class="list">
       <thead>
@@ -144,10 +145,10 @@
             #
           </th>
           <th width="150">
-            آی پی
+            IP
           </th>
           <th width="80">
-            تاخیر
+            Delay
           </th>
           <th width="60">
             <a class="download-link" href="#" onclick="downloadAsCSV()">
@@ -2214,7 +2215,7 @@ function startScan() {
   document.getElementById('btn-start').disabled = 'disabled';
   document.getElementById('btn-start').style.color = 'gray';
   document.getElementById('test-no').innerText = '';
-  document.getElementById('start-hint').innerHTML = `در حال آماده سازی <img src="./assets/preparing.gif" height="16" />`;
+  document.getElementById('start-hint').innerHTML = `Preparing <img src="./assets/preparing.gif" height="16" />`;
   document.getElementById('start-hint').style = `color: green; font-weight: bold;`;
 
   setTimeout(() => {
@@ -2276,14 +2277,14 @@ async function testIPs(ipList) {
       }, timeout);
       if (ch) {
         timeout = 1 * multiply * maxLatency;
-        document.getElementById('test-no').innerText = `تست شماره ${testNo}:`;
+        document.getElementById('test-no').innerText = `Test ${testNo}:`;
         document.getElementById('ip-no').innerText = ip;
         document.getElementById('ip-no').style = `color: green`;
         document.getElementById('ip-try').innerText = ch;
         document.getElementById('ip-latency').innerText = Math.floor((performance.now() - startTime) / chNo) + 'ms';
       } else {
         timeout = 1.2 * multiply * maxLatency;
-        document.getElementById('test-no').innerText = `تست شماره ${testNo}:`;
+        document.getElementById('test-no').innerText = `Test ${testNo}:`;
         document.getElementById('ip-no').innerText = ip;
         document.getElementById('ip-no').style = `color: red`;
         document.getElementById('ip-try').innerText = '';
@@ -2332,7 +2333,7 @@ async function testIPs(ipList) {
   document.getElementById('ip-no').innerText = '';
   document.getElementById('ip-try').innerText = '';
   document.getElementById('ip-latency').innerText = '';
-  document.getElementById('btn-start').innerText = 'شروع مجدد';
+  document.getElementById('btn-start').innerText = 'Restart';
   document.getElementById('btn-start').disabled = false;
   document.getElementById('btn-start').style.display = 'inline-block';
   document.getElementById('btn-start').style.color = 'green';
@@ -2340,19 +2341,19 @@ async function testIPs(ipList) {
 
   if (immediateStop) {
     immediateStop = false;
-    document.getElementById('test-no').innerText = `لغو شد!`;
+    document.getElementById('test-no').innerText = `Cancelled!`;
     document.getElementById('test-no').style = `color: red; font-weight: bold;`;
   } else {
-    document.getElementById('test-no').innerText = `پایان`;
+    document.getElementById('test-no').innerText = `End`;
     document.getElementById('test-no').style = `color: green; font-weight: bold;`;
   }
 }
 
 function copyToClipboard(ip) {
   navigator.clipboard.writeText(ip).then(() => {
-    alert('آی‌پی‌ در کلیپ‌بورد کپی شد.');
+    alert('The IP was copied to the clipboard.');
   }).catch(() => {
-    alert('مشکلی پیش آمده است!');
+    alert('There is a Problem!');
   });
 }
 
