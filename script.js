@@ -233,7 +233,7 @@ async function testIPs(ipList) {
       <span class="lang-field lang-en text-danger fw-bold">Canceled!</span>  
     `;
   } else {
-    document.getElementById('test-no').innerText = `
+    document.getElementById('test-no').innerHTML = `
       <span class="lang-field lang-fa text-success fw-bold">تمام شد.</span>
       <span class="lang-field lang-en text-success fw-bold">Done.</span>  
     `;
