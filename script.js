@@ -233,8 +233,8 @@ async function testIPs(ipList) {
       <span class="lang-field lang-en text-danger fw-bold">Canceled!</span>  
     `;
   } else {
-    if (window.self !== window.top && window.parent.document.getElementById('clean-ip')) {
-      window.parent.document.getElementById('clean-ip').value = validIPs.map(el => el.ip).join('\n');
+    if (window.self !== window.top) {
+      copyAllToClipboard()
     }
 
     document.getElementById('test-no').innerHTML = `
