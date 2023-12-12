@@ -234,7 +234,6 @@ async function testIPs(ipList) {
     `;
   } else {
     if (window.self !== window.top) {
-      copyAllToClipboard()
       window.top.postMessage(validIPs.map(el => el.ip).join('\n'), '*');
     }
 
@@ -247,7 +246,7 @@ async function testIPs(ipList) {
 }
 
 function copyToClipboard(ip) {
-  navigator.clipboard.writeText(ip).then(() => {
+  window.navigator.clipboard.writeText(ip).then(() => {
     alert('آی‌پی‌ در کلیپ‌بورد کپی شد.');
   }).catch(() => {
     alert('مشکلی پیش آمده است!');
