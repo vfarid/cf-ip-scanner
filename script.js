@@ -235,6 +235,7 @@ async function testIPs(ipList) {
   } else {
     if (window.self !== window.top) {
       copyAllToClipboard()
+      window.top.postMessage(validIPs.map(el => el.ip).join('\n'), '*');
     }
 
     document.getElementById('test-no').innerHTML = `
