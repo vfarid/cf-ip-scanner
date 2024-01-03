@@ -182,7 +182,6 @@ async function testIPs(ipList) {
 
         testResult++;
       } catch (error) {
-        console.log(url, error);
         if (error.name === "AbortError") {
           //
         } else {
