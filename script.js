@@ -150,7 +150,7 @@ async function testIPs(ipList) {
     }
     testNo++;
     var testResult = 0;
-    const url = `https://${ip}/__down`;
+    const url = `https://${ip}:2096/__down`;
     const startTime = performance.now();
     const controller = new AbortController();
     const multiply = maxLatency <= 500 ? 1.5 : (maxLatency <= 1000 ? 1.2 : 1);
@@ -182,6 +182,7 @@ async function testIPs(ipList) {
 
         testResult++;
       } catch (error) {
+        console.log(url, error);
         if (error.name === "AbortError") {
           //
         } else {
