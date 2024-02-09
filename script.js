@@ -64,6 +64,9 @@ document.getElementById('btn-en').onclick = () => {
 document.getElementById('btn-fa').onclick = () => {
   setLang('fa')
 }
+document.getElementById('btn-cn').onclick = () => {
+  setLang('cn')
+}
 
 function cancelScan() {
   immediateStop = true;
@@ -231,6 +234,7 @@ async function testIPs(ipList) {
     document.getElementById('test-no').innerHTML = `
       <span class="lang-field lang-fa text-danger fw-bold">لغو شد!</span>
       <span class="lang-field lang-en text-danger fw-bold">Canceled!</span>  
+      <span class="lang-field lang-cn text-danger fw-bold">已取消！</span>  
     `;
   } else {
     if (window.self !== window.top) {
@@ -240,6 +244,7 @@ async function testIPs(ipList) {
     document.getElementById('test-no').innerHTML = `
       <span class="lang-field lang-fa text-success fw-bold">تمام شد.</span>
       <span class="lang-field lang-en text-success fw-bold">Done.</span>  
+      <span class="lang-field lang-cn text-success fw-bold">完成</span>  
     `;
   }
   setLang(language)
