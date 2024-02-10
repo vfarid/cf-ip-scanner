@@ -27,30 +27,49 @@
       </div>
     </div>
     <div class="row my-2">
-      <label for="max-ip" class="col-sm-12 col-md-4 col-lg-2 col-form-label">
-        <span class="lang-field lang-fa">تعداد آی‌پی:</span>
-        <span class="lang-field lang-en">No. of IPs:</span>
-        <span class="lang-field lang-cn">IP数量：</span>
-      </label>
-      <div class="col-sm-12 col-md-8 col-lg-4">
-        <input class="form-control" type="number" id="max-ip" min="1" max="5000" value="5">
-      </div>
       <label for="max-latency" class="col-sm-12 col-md-4 col-lg-2 col-form-label">
         <span class="lang-field lang-fa">تاخیر مجاز:</span>
         <span class="lang-field lang-en">Max. Latency:</span>
         <span class="lang-field lang-cn">最大延迟：</span>
       </label>
-      <div class="col-sm-12 col-md-8 col-lg-4">
+      <div class="col-sm-12 col-md-8 col-lg-2">
         <input class="form-control" type="number" id="max-latency" min="50" max="3000" step="50" value="500">
+      </div>
+      <label for="protocol" class="col-sm-12 col-md-4 col-lg-2 col-form-label">
+        <span class="lang-field lang-fa">پروتکل:</span>
+        <span class="lang-field lang-en">Protocol:</span>
+        <span class="lang-field lang-cn">协议：</span>
+      </label>
+      <div class="col-sm-12 col-md-8 col-lg-2">
+        <select class="form-control" id="protocol">
+          <option value="http" selected>HTTP</option>
+          <option value="https">HTTPS</option>
+        </select>
+      </div>
+      <label for="port-no" class="col-sm-12 col-md-4 col-lg-2 col-form-label">
+        <span class="lang-field lang-fa">پورت:</span>
+        <span class="lang-field lang-en">Port:</span>
+        <span class="lang-field lang-cn">端口号：</span>
+      </label>
+      <div class="col-sm-12 col-md-8 col-lg-2">
+        <select class="form-control" id="port-no"></select>
       </div>
     </div>
     <div class="row my-2">
+      <label for="max-ip" class="col-sm-12 col-md-4 col-lg-2 col-form-label">
+        <span class="lang-field lang-fa">تعداد آی‌پی:</span>
+        <span class="lang-field lang-en">No. of IPs:</span>
+        <span class="lang-field lang-cn">IP数量：</span>
+      </label>
+      <div class="col-sm-12 col-md-8 col-lg-2">
+        <input class="form-control" type="number" id="max-ip" min="1" max="5000" value="5">
+      </div>
       <label for="ip-regex" class="col-sm-12 col-md-4 col-lg-2 col-form-label">
         <span class="lang-field lang-fa">عبارت منظم:</span>
         <span class="lang-field lang-en">Regular expression:</span>
         <span class="lang-field lang-cn">正则表达式：</span>
       </label>
-      <div class="col-sm-12 col-md-8 col-lg-10">
+      <div class="col-sm-12 col-md-8 col-lg-6">
         <input type="text" class="form-control" dir="ltr" id="ip-regex" placeholder="^104\.17\.|^141\.">
       </div>
     </div>
@@ -117,10 +136,15 @@
           <span class="lang-field lang-en">Start</span>
           <span class="lang-field lang-cn">开始</span>  
         </button>&nbsp;
-        <button id="btn-cancel" class="btn btn-outline-secondary btn-sm rounded-2 fw-bold" disabled type="button" onclick="cancelScan()">
+        <button id="btn-cancel" class="btn btn-outline-secondary btn-sm rounded-2 fw-bold d-none" type="button" onclick="cancelScan()">
           <span class="lang-field lang-fa">لغو</span>
           <span class="lang-field lang-en">Cancel</span>  
           <span class="lang-field lang-cn">取消</span>
+        </button>
+        <button id="btn-reset" class="btn btn-outline-danger btn-sm rounded-2 fw-bold" type="button" onclick="resetDefaults()">
+          <span class="lang-field lang-fa">تنظیم دوباره پیش‌فرض‌ها</span>
+          <span class="lang-field lang-en">Reset defaults</span>  
+          <span class="lang-field lang-cn">重置默认值</span>
         </button>
       </div>
     </div>
