@@ -1,5 +1,5 @@
-var cfIPv4 = []
-var cfIPv4ToScan = []
+let cfIPv4 = []
+let cfIPv4ToScan = []
 const noOfEachRange24 = 30
 const client = new XMLHttpRequest();
 client.open('GET', 'https://raw.githubusercontent.com/vfarid/cf-ip-scanner/main/ipv4.txt');
@@ -24,14 +24,62 @@ let ipRegex;
 let immediateStop = false;
 let progressBar = document.getElementById('progress-bar');
 let progress = 0;
+let portNo = 443;
+let protocol = "https";
 let language = localStorage.getItem('lang') || 'fa'
 
-document.getElementById('max-ip').value = localStorage.getItem('max-ip') || 20;
-document.getElementById('max-latency').value = localStorage.getItem('max-latency') || 400;
+document.getElementById('max-ip').value = localStorage.getItem('max-ip') || 10;
+document.getElementById('max-latency').value = localStorage.getItem('max-latency') || 600;
 document.getElementById('ip-regex').value = localStorage.getItem('ip-regex');
 document.getElementById('ip-include').value = localStorage.getItem('ip-include');
 document.getElementById('ip-exclude').value = localStorage.getItem('ip-exclude');
-setLang(language)
+document.getElementById('protocol').value = localStorage.getItem('protocol') || "https";
+setLang(language);
+setProtocol();
+
+function setProtocol() {
+  const ports = {
+    http : ["80",  "8080", "2052", "2082", "2086", "2095"],
+    https: ["443", "8443", "2053", "2083", "2087", "2096"],
+  };
+
+  portNo = document.getElementById('port-no').value || localStorage.getItem('port-no');
+  console.log(portNo)
+  document.getElementById('port-no').innerHTML = "";
+  if (document.getElementById('protocol').value == 'http') {
+    for(let port of ports.http) {
+      document.getElementById('port-no').options.add(new Option(port))
+    }
+    if (ports.http.indexOf(portNo) < 0 && ports.https.indexOf(portNo) >= 0) {
+      portNo = ports.http[ports.https.indexOf(portNo)];
+    }
+    if (!portNo) {
+      portNo = ports.http[0]
+    }
+  } else {
+    for(let port of ports.https) {
+      document.getElementById('port-no').options.add(new Option(port))
+    }
+    if (ports.https.indexOf(portNo) < 0 && ports.http.indexOf(portNo) >= 0) {
+      portNo = ports.https[ports.http.indexOf(portNo)];
+    }
+    if (!portNo) {
+      portNo = ports.https[0]
+    }
+  }
+  setTimeout(() => {document.getElementById('port-no').value = portNo}, 1);
+}
+
+function resetDefaults() {
+  localStorage.removeItem('max-ip');
+  localStorage.removeItem('max-latency');
+  localStorage.removeItem('ip-regex');
+  localStorage.removeItem('ip-include');
+  localStorage.removeItem('ip-exclude');
+  localStorage.removeItem('port-no');
+  localStorage.removeItem('protocol');
+  document.location = document.location;
+}
 
 function setLang(lang) {
   if (lang == 'fa') {
@@ -67,6 +115,9 @@ document.getElementById('btn-fa').onclick = () => {
 document.getElementById('btn-cn').onclick = () => {
   setLang('cn')
 }
+document.getElementById('protocol').onchange = () => {
+  setProtocol()
+}
 
 function cancelScan() {
   immediateStop = true;
@@ -76,7 +127,11 @@ function cancelScan() {
   document.getElementById('ip-regex').disabled = false;
   document.getElementById('ip-include').disabled = false;
   document.getElementById('ip-exclude').disabled = false;
-  document.getElementById('btn-cancel').disabled = true;
+  document.getElementById('port-no').disabled = false;
+  document.getElementById('protocol').disabled = false;
+  document.getElementById('btn-cancel').classList.add('d-none');
+  document.getElementById('btn-start').classList.remove('d-none');
+  document.getElementById('btn-reset').classList.remove('d-none');
 }
 
 let ips = [];
@@ -87,12 +142,16 @@ function startScan() {
   ipRegex = document.getElementById('ip-regex').value;
   ipInclude = document.getElementById('ip-include').value;
   ipExclude = document.getElementById('ip-exclude').value;
+  portNo = document.getElementById('port-no').value;
+  protocol = document.getElementById('protocol').value;
 
   localStorage.setItem('max-ip', maxIP);
   localStorage.setItem('max-latency', maxLatency);
   localStorage.setItem('ip-regex', ipRegex);
   localStorage.setItem('ip-include', ipInclude);
   localStorage.setItem('ip-exclude', ipExclude);
+  localStorage.setItem('port-no', portNo);
+  localStorage.setItem('protocol', protocol);
 
   testNo = 0;
   numberOfWorkingIPs = 0;
@@ -104,8 +163,12 @@ function startScan() {
   document.getElementById('ip-regex').disabled = true;
   document.getElementById('ip-include').disabled = true;
   document.getElementById('ip-exclude').disabled = true;
+  document.getElementById('port-no').disabled = true;
+  document.getElementById('protocol').disabled = true;
   document.getElementById('test-no').innerText = '';
-  document.getElementById('btn-cancel').disabled = false;
+  document.getElementById('btn-cancel').classList.remove('d-none');
+  document.getElementById('btn-start').classList.add('d-none');
+  document.getElementById('btn-reset').classList.add('d-none');
 
   setTimeout(() => {
     let ips = processIPs()
@@ -144,21 +207,25 @@ function processIPs() {
   return ips
 }
 
-
-
 async function testIPs(ipList) {
   for (const ip of ipList) {
     if (immediateStop) {
       break;
     }
     testNo++;
-    var testResult = 0;
-    const url = `https://${ip}:2096/__down`;
+    let testResult = 0;
+    let url = null;
+    if (protocol == 'https') {
+      url = `https://${ip}:${portNo}/__down`;
+    } else {
+      url = `http://${ip}:${portNo}/cdn-cgi/trace`;
+    }
+
     const startTime = performance.now();
     const controller = new AbortController();
     const multiply = maxLatency <= 500 ? 1.5 : (maxLatency <= 1000 ? 1.2 : 1);
-    var timeout = 1.5 * multiply * maxLatency;
-    var chNo = 0;
+    let timeout = 1.5 * multiply * maxLatency;
+    let chNo = 0;
     for (const ch of ['', '|', '/', '-', '\\']) {
       const timeoutId = setTimeout(() => {
         controller.abort();
@@ -227,7 +294,11 @@ async function testIPs(ipList) {
   document.getElementById('ip-regex').disabled = false;
   document.getElementById('ip-include').disabled = false;
   document.getElementById('ip-exclude').disabled = false;
-  document.getElementById('btn-cancel').disabled = true;
+  document.getElementById('port-no').disabled = false;
+  document.getElementById('protocol').disabled = false;
+  document.getElementById('btn-cancel').classList.add('d-none');
+  document.getElementById('btn-start').classList.remove('d-none');
+  document.getElementById('btn-reset').classList.remove('d-none');
 
   if (immediateStop) {
     immediateStop = false;
