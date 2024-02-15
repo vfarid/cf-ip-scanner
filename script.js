@@ -3,7 +3,7 @@ let cfIPv4ToScan = []
 const noOfEachRange24 = 30
 const client = new XMLHttpRequest();
 client.open('GET', 'https://raw.githubusercontent.com/vfarid/cf-ip-scanner/main/ipv4.txt');
-client.onreadystatechange = function() {
+client.onreadystatechange = function () {
   cfIPv4 = client.responseText.split("\n").map((cidr) => cidr.trim()).filter((cidr) => isCIDR(cidr));
   document.getElementById('btn-start').disabled = false;
   const tbody = document.getElementById('ip-ranges-body');
@@ -16,6 +16,7 @@ client.onreadystatechange = function() {
 client.send();
 
 let maxIP;
+let concurrentSize;
 let testNo;
 let validIPs;
 let maxLatency;
@@ -29,6 +30,7 @@ let protocol = "https";
 let language = localStorage.getItem('lang') || 'fa'
 
 document.getElementById('max-ip').value = localStorage.getItem('max-ip') || 10;
+document.getElementById('concurrent-size').value = localStorage.getItem('concurrent-size') || 2;
 document.getElementById('max-latency').value = localStorage.getItem('max-latency') || 600;
 document.getElementById('ip-regex').value = localStorage.getItem('ip-regex');
 document.getElementById('ip-include').value = localStorage.getItem('ip-include');
@@ -39,15 +41,15 @@ setProtocol();
 
 function setProtocol() {
   const ports = {
-    http : ["80",  "8080", "2052", "2082", "2086", "2095"],
+    http: ["80", "8080", "2052", "2082", "2086", "2095"],
     https: ["443", "8443", "2053", "2083", "2087", "2096"],
   };
 
   portNo = document.getElementById('port-no').value || localStorage.getItem('port-no');
   console.log(portNo)
   document.getElementById('port-no').innerHTML = "";
-  if (document.getElementById('protocol').value == 'http') {
-    for(let port of ports.http) {
+  if (document.getElementById('protocol').value === 'http') {
+    for (let port of ports.http) {
       document.getElementById('port-no').options.add(new Option(port))
     }
     if (ports.http.indexOf(portNo) < 0 && ports.https.indexOf(portNo) >= 0) {
@@ -57,7 +59,7 @@ function setProtocol() {
       portNo = ports.http[0]
     }
   } else {
-    for(let port of ports.https) {
+    for (let port of ports.https) {
       document.getElementById('port-no').options.add(new Option(port))
     }
     if (ports.https.indexOf(portNo) < 0 && ports.http.indexOf(portNo) >= 0) {
@@ -67,11 +69,14 @@ function setProtocol() {
       portNo = ports.https[0]
     }
   }
-  setTimeout(() => {document.getElementById('port-no').value = portNo}, 1);
+  setTimeout(() => {
+    document.getElementById('port-no').value = portNo
+  }, 1);
 }
 
 function resetDefaults() {
   localStorage.removeItem('max-ip');
+  localStorage.removeItem('concurrent-size');
   localStorage.removeItem('max-latency');
   localStorage.removeItem('ip-regex');
   localStorage.removeItem('ip-include');
@@ -82,7 +87,7 @@ function resetDefaults() {
 }
 
 function setLang(lang) {
-  if (lang == 'fa') {
+  if (lang === 'fa') {
     document.getElementById('body').style.direction = 'rtl';
   } else {
     document.getElementById('body').style.direction = 'ltr';
@@ -123,6 +128,7 @@ function cancelScan() {
   immediateStop = true;
   document.getElementById('btn-start').disabled = false;
   document.getElementById('max-ip').disabled = false;
+  document.getElementById('concurrent-size').disabled = false;
   document.getElementById('max-latency').disabled = false;
   document.getElementById('ip-regex').disabled = false;
   document.getElementById('ip-include').disabled = false;
@@ -138,6 +144,7 @@ let ips = [];
 
 function startScan() {
   maxIP = ~~document.getElementById('max-ip').value;
+  concurrentSize = ~~document.getElementById('concurrent-size').value;
   maxLatency = ~~document.getElementById('max-latency').value;
   ipRegex = document.getElementById('ip-regex').value;
   ipInclude = document.getElementById('ip-include').value;
@@ -146,6 +153,7 @@ function startScan() {
   protocol = document.getElementById('protocol').value;
 
   localStorage.setItem('max-ip', maxIP);
+  localStorage.setItem('concurrent-size', concurrentSize);
   localStorage.setItem('max-latency', maxLatency);
   localStorage.setItem('ip-regex', ipRegex);
   localStorage.setItem('ip-include', ipInclude);
@@ -159,6 +167,7 @@ function startScan() {
   document.getElementById('result').innerHTML = '';
   document.getElementById('btn-start').disabled = true;
   document.getElementById('max-ip').disabled = true;
+  document.getElementById('concurrent-size').disabled = true;
   document.getElementById('max-latency').disabled = true;
   document.getElementById('ip-regex').disabled = true;
   document.getElementById('ip-include').disabled = true;
@@ -170,10 +179,61 @@ function startScan() {
   document.getElementById('btn-start').classList.add('d-none');
   document.getElementById('btn-reset').classList.add('d-none');
 
-  setTimeout(() => {
+  setTimeout(async () => {
     let ips = processIPs()
     ips = randomizeElements(ips)
-    testIPs(ips);
+    while (ips.length > 0) {
+      if (immediateStop) {
+        break;
+      }
+
+      let asyncFunctionsList = []
+      for (let i = 0; i < concurrentSize; i++) {
+        asyncFunctionsList.push(testIP(ips.pop()))
+      }
+      await Promise.all(asyncFunctionsList);
+
+      if (numberOfWorkingIPs >= maxIP) {
+        break;
+      }
+    }
+
+    document.getElementById('ip-no').innerText = '';
+    document.getElementById('ip-try').innerText = '';
+    document.getElementById('ip-latency').innerText = '';
+    document.getElementById('btn-start').disabled = false;
+    document.getElementById('max-ip').disabled = false;
+    document.getElementById('concurrent-size').disabled = false;
+    document.getElementById('max-latency').disabled = false;
+    document.getElementById('ip-regex').disabled = false;
+    document.getElementById('ip-include').disabled = false;
+    document.getElementById('ip-exclude').disabled = false;
+    document.getElementById('port-no').disabled = false;
+    document.getElementById('protocol').disabled = false;
+    document.getElementById('btn-cancel').classList.add('d-none');
+    document.getElementById('btn-start').classList.remove('d-none');
+    document.getElementById('btn-reset').classList.remove('d-none');
+
+    if (immediateStop) {
+      immediateStop = false;
+      document.getElementById('test-no').innerHTML = `
+            <span class="lang-field lang-fa text-danger fw-bold">لغو شد!</span>
+            <span class="lang-field lang-en text-danger fw-bold">Canceled!</span>  
+            <span class="lang-field lang-cn text-danger fw-bold">已取消！</span>  
+            `;
+    } else {
+      if (window.self !== window.top) {
+        window.top.postMessage(validIPs.map(el => el.ip).join('\n'), '*');
+      }
+
+      document.getElementById('test-no').innerHTML = `
+            <span class="lang-field lang-fa text-success fw-bold">تمام شد.</span>
+            <span class="lang-field lang-en text-success fw-bold">Done.</span>  
+            <span class="lang-field lang-cn text-success fw-bold">完成</span>  
+            `;
+    }
+    setLang(language)
+
   }, 50)
 }
 
@@ -191,7 +251,9 @@ function processIPs() {
   }
   if (ipExclude) {
     excludeRegex = new RegExp(
-      ipExclude.split(',').map(c => {return '^' + c.replaceAll('.', '\\.').replaceAll('/', '\\/')}).join('|')
+        ipExclude.split(',').map(c => {
+          return '^' + c.replaceAll('.', '\\.').replaceAll('/', '\\/')
+        }).join('|')
     );
   }
 
@@ -207,68 +269,65 @@ function processIPs() {
   return ips
 }
 
-async function testIPs(ipList) {
-  for (const ip of ipList) {
-    if (immediateStop) {
-      break;
-    }
-    testNo++;
-    let testResult = 0;
-    let url = null;
-    if (protocol == 'https') {
-      url = `https://${ip}:${portNo}/__down`;
+async function testIP(ip) {
+  if (!ip) return;
+  testNo++;
+  let testResult = 0;
+  let url = null;
+  if (protocol === 'https') {
+    url = `https://${ip}:${portNo}/__down`;
+  } else {
+    url = `http://${ip}:${portNo}/cdn-cgi/trace`;
+  }
+
+  const startTime = performance.now();
+  const controller = new AbortController();
+  const multiply = maxLatency <= 500 ? 1.5 : (maxLatency <= 1000 ? 1.2 : 1);
+  let timeout = 1.5 * multiply * maxLatency;
+  let chNo = 0;
+  for (const ch of ['', '|', '/', '-', '\\']) {
+    const timeoutId = setTimeout(() => {
+      controller.abort();
+    }, timeout);
+    if (ch) {
+      timeout = 1 * multiply * maxLatency;
+      document.getElementById('test-no').innerText = `#${testNo}:`;
+      document.getElementById('ip-no').innerText = ip;
+      document.getElementById('ip-no').style = `color: green`;
+      document.getElementById('ip-try').innerText = ch;
+      document.getElementById('ip-latency').innerText = Math.floor((performance.now() - startTime) / chNo) + 'ms';
     } else {
-      url = `http://${ip}:${portNo}/cdn-cgi/trace`;
+      timeout = 1.2 * multiply * maxLatency;
+      document.getElementById('test-no').innerText = `#${testNo}:`;
+      document.getElementById('ip-no').innerText = ip;
+      document.getElementById('ip-no').style = `color: red`;
+      document.getElementById('ip-try').innerText = '';
+      document.getElementById('ip-latency').innerText = '';
     }
+    try {
+      const response = await fetch(url, {
+        signal: controller.signal,
+      });
 
-    const startTime = performance.now();
-    const controller = new AbortController();
-    const multiply = maxLatency <= 500 ? 1.5 : (maxLatency <= 1000 ? 1.2 : 1);
-    let timeout = 1.5 * multiply * maxLatency;
-    let chNo = 0;
-    for (const ch of ['', '|', '/', '-', '\\']) {
-      const timeoutId = setTimeout(() => {
-        controller.abort();
-      }, timeout);
-      if (ch) {
-        timeout = 1 * multiply * maxLatency;
-        document.getElementById('test-no').innerText = `#${testNo}:`;
-        document.getElementById('ip-no').innerText = ip;
-        document.getElementById('ip-no').style = `color: green`;
-        document.getElementById('ip-try').innerText = ch;
-        document.getElementById('ip-latency').innerText = Math.floor((performance.now() - startTime) / chNo) + 'ms';
+      testResult++;
+    } catch (error) {
+      if (error.name === "AbortError") {
+        //
       } else {
-        timeout = 1.2 * multiply * maxLatency;
-        document.getElementById('test-no').innerText = `#${testNo}:`;
-        document.getElementById('ip-no').innerText = ip;
-        document.getElementById('ip-no').style = `color: red`;
-        document.getElementById('ip-try').innerText = '';
-        document.getElementById('ip-latency').innerText = '';
-      }
-      try {
-        const response = await fetch(url, {
-          signal: controller.signal,
-        });
-
         testResult++;
-      } catch (error) {
-        if (error.name === "AbortError") {
-          //
-        } else {
-          testResult++;
-        }
       }
-      clearTimeout(timeoutId);
-      chNo++;
     }
+    clearTimeout(timeoutId);
+    chNo++;
+  }
 
-    const latency = Math.floor((performance.now() - startTime) / 5);
+  const latency = Math.floor((performance.now() - startTime) / 5);
 
-    if (testResult === 5 && latency <= maxLatency) {
-      numberOfWorkingIPs++;
-      validIPs.push({ip: ip, latency: latency});
-      const sortedArr = validIPs.sort((a, b) => a.latency - b.latency);
-      const tableRows = sortedArr.map(obj => `
+  if (testResult === 5 && latency <= maxLatency) {
+    numberOfWorkingIPs++;
+    validIPs.push({ip: ip, latency: latency});
+    const sortedArr = validIPs.sort((a, b) => a.latency - b.latency);
+    const tableRows = sortedArr.map(obj => `
         <tr>
           <td></td>
           <td>${obj.ip}</td>
@@ -277,48 +336,8 @@ async function testIPs(ipList) {
           <button class="btn btn-outline-secondary btn-sm" onclick="copyToClipboard('${obj.ip}')"><img height="16px" src="assets/icon-copy.png" /></button>
           </td>
         </tr>`).join('\n');
-      document.getElementById('result').innerHTML = tableRows;
-    }
-
-    if (numberOfWorkingIPs >= maxIP) {
-      break;
-    }
+    document.getElementById('result').innerHTML = tableRows;
   }
-
-  document.getElementById('ip-no').innerText = '';
-  document.getElementById('ip-try').innerText = '';
-  document.getElementById('ip-latency').innerText = '';
-  document.getElementById('btn-start').disabled = false;
-  document.getElementById('max-ip').disabled = false;
-  document.getElementById('max-latency').disabled = false;
-  document.getElementById('ip-regex').disabled = false;
-  document.getElementById('ip-include').disabled = false;
-  document.getElementById('ip-exclude').disabled = false;
-  document.getElementById('port-no').disabled = false;
-  document.getElementById('protocol').disabled = false;
-  document.getElementById('btn-cancel').classList.add('d-none');
-  document.getElementById('btn-start').classList.remove('d-none');
-  document.getElementById('btn-reset').classList.remove('d-none');
-
-  if (immediateStop) {
-    immediateStop = false;
-    document.getElementById('test-no').innerHTML = `
-      <span class="lang-field lang-fa text-danger fw-bold">لغو شد!</span>
-      <span class="lang-field lang-en text-danger fw-bold">Canceled!</span>  
-      <span class="lang-field lang-cn text-danger fw-bold">已取消！</span>  
-    `;
-  } else {
-    if (window.self !== window.top) {
-      window.top.postMessage(validIPs.map(el => el.ip).join('\n'), '*');
-    }
-
-    document.getElementById('test-no').innerHTML = `
-      <span class="lang-field lang-fa text-success fw-bold">تمام شد.</span>
-      <span class="lang-field lang-en text-success fw-bold">Done.</span>  
-      <span class="lang-field lang-cn text-success fw-bold">完成</span>  
-    `;
-  }
-  setLang(language)
 }
 
 function copyToClipboard(ip) {
@@ -345,7 +364,7 @@ function makeCIDR(includeStr) {
       return [cidr];
     } else if (cidr) {
       const regex = new RegExp(
-        '^' + cidr.replaceAll('.', '\\.').replaceAll('/', '\\/')
+          '^' + cidr.replaceAll('.', '\\.').replaceAll('/', '\\/')
       );
       return cfIPv4.filter((cidr) => cidr.match(regex));
     } else {
@@ -396,12 +415,14 @@ function cidrToRandomIPArray(cidr, count) {
 }
 
 function randomizeElements(arr) {
-  return [...arr].sort(() => {return 0.5 - Math.random()});
+  return [...arr].sort(() => {
+    return 0.5 - Math.random()
+  });
 }
 
 function downloadAsCSV() {
   const csvString = validIPs.map(el => el.ip).join('\n');
-  const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+  const blob = new Blob([csvString], {type: 'text/csv;charset=utf-8;'});
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.setAttribute('href', url);
@@ -414,7 +435,7 @@ function downloadAsCSV() {
 
 function downloadAsJSON() {
   const jsonString = JSON.stringify(validIPs.map(el => el.ip), null, 2);
-  const blob = new Blob([jsonString], { type: 'application/json;charset=utf-8;' });
+  const blob = new Blob([jsonString], {type: 'application/json;charset=utf-8;'});
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.setAttribute('href', url);

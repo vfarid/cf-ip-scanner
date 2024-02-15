@@ -69,8 +69,16 @@
         <span class="lang-field lang-en">Regular expression:</span>
         <span class="lang-field lang-cn">正则表达式：</span>
       </label>
-      <div class="col-sm-12 col-md-8 col-lg-6">
+      <div class="col-sm-12 col-md-8 col-lg-2">
         <input type="text" class="form-control" dir="ltr" id="ip-regex" placeholder="^104\.17\.|^141\.">
+      </div>
+      <label for="concurrent-size" class="col-sm-12 col-md-4 col-lg-2 col-form-label">
+        <span class="lang-field lang-fa">تعداد همزمان:</span>
+        <span class="lang-field lang-en">No. of Concurrent:</span>
+        <span class="lang-field lang-cn">并发数：</span>
+      </label>
+      <div class="col-sm-12 col-md-8 col-lg-2">
+        <input class="form-control" type="number" id="concurrent-size" min="1" max="12" value="2">
       </div>
     </div>
     <div class="row my-2">
@@ -95,8 +103,8 @@
       <div class="btn-group col-xs-3 col-lg-4 my-1" role="group">
         <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#ip-ranges-modal">
           <span class="lang-field lang-fa">مشاهده‌ی رنج آی‌پی‌ها</span>
-          <span class="lang-field lang-en">View IP ranges</span>  
-          <span class="lang-field lang-cn">查看IP范围</span>  
+          <span class="lang-field lang-en">View IP ranges</span>
+          <span class="lang-field lang-cn">查看IP范围</span>
         </button>
         <div class="modal fade" id="ip-ranges-modal" tabindex="-1" aria-labelledby="ip-ranges-modal-label" aria-hidden="true">
           <div class="modal-dialog modal-dialog-scrollable">
@@ -104,8 +112,8 @@
               <div class="modal-header">
                 <h5 class="modal-title" id="ip-ranges-modal-label">
                   <span class="lang-field lang-fa">رنج آی‌پی‌ها</span>
-                  <span class="lang-field lang-en">IP ranges</span>  
-                  <span class="lang-field lang-cn">IP范围</span>  
+                  <span class="lang-field lang-en">IP ranges</span>
+                  <span class="lang-field lang-cn">IP范围</span>
                 </h5>
               </div>
               <div class="modal-body">
@@ -116,12 +124,12 @@
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                   <span class="lang-field lang-fa">بستن</span>
-                  <span class="lang-field lang-en">Close</span> 
-                  <span class="lang-field lang-cn">关闭</span> 
+                  <span class="lang-field lang-en">Close</span>
+                  <span class="lang-field lang-cn">关闭</span>
                 </button>
                 <button type="button" class="btn btn-primary" onclick="copyToClipboard(cfIPv4.join(`\n`))">
                   <span class="lang-field lang-fa">کپی</span>
-                  <span class="lang-field lang-en">Copy</span>  
+                  <span class="lang-field lang-en">Copy</span>
                   <span class="lang-field lang-cn">复制</span>
                 </button>
               </div>
@@ -134,16 +142,16 @@
         <button id="btn-start" class="btn btn-success btn-sm rounded-2 fw-bold" disabled type="button" onclick="startScan()">
           <span class="lang-field lang-fa">شروع</span>
           <span class="lang-field lang-en">Start</span>
-          <span class="lang-field lang-cn">开始</span>  
+          <span class="lang-field lang-cn">开始</span>
         </button>&nbsp;
         <button id="btn-cancel" class="btn btn-outline-secondary btn-sm rounded-2 fw-bold d-none" type="button" onclick="cancelScan()">
           <span class="lang-field lang-fa">لغو</span>
-          <span class="lang-field lang-en">Cancel</span>  
+          <span class="lang-field lang-en">Cancel</span>
           <span class="lang-field lang-cn">取消</span>
         </button>
         <button id="btn-reset" class="btn btn-outline-danger btn-sm rounded-2 fw-bold" type="button" onclick="resetDefaults()">
           <span class="lang-field lang-fa">تنظیم دوباره پیش‌فرض‌ها</span>
-          <span class="lang-field lang-en">Reset defaults</span>  
+          <span class="lang-field lang-en">Reset defaults</span>
           <span class="lang-field lang-cn">重置默认值</span>
         </button>
       </div>
@@ -151,7 +159,7 @@
     <div class="row my-2 border-bottom border-dark py-3">
       <div id="start-hint" class="col-xs-12 col-lg-5 text-danger fw-bold py-1">
         <span class="lang-field lang-fa">قبل از شروع vpn خود را خاموش کنید!</span>
-        <span class="lang-field lang-en">Turn off your VPN before start!</span>  
+        <span class="lang-field lang-en">Turn off your VPN before start!</span>
         <span class="lang-field lang-cn">在开始之前请先关闭你的VPN！</span>
       </div>
       <div class="col col-xs-2 col-lg-1 py-1" id="test-no"></div>
@@ -167,12 +175,12 @@
           </th>
           <th style="min-width: 150px;">
             <span class="lang-field lang-fa">آی‌پی</span>
-            <span class="lang-field lang-en">IP</span>  
+            <span class="lang-field lang-en">IP</span>
             <span class="lang-field lang-cn">IP</span>
           </th>
           <th>
             <span class="lang-field lang-fa">تاخیر</span>
-            <span class="lang-field lang-en">Latency</span>  
+            <span class="lang-field lang-en">Latency</span>
             <span class="lang-field lang-cn">延迟</span>
           </th>
           <th width="70">
