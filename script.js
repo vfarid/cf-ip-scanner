@@ -44,7 +44,6 @@ function setProtocol() {
   };
 
   portNo = document.getElementById('port-no').value || localStorage.getItem('port-no');
-  console.log(portNo)
   document.getElementById('port-no').innerHTML = "";
   if (document.getElementById('protocol').value == 'http') {
     for(let port of ports.http) {
@@ -252,9 +251,7 @@ async function testIPs(ipList) {
 
         testResult++;
       } catch (error) {
-        if (error.name === "AbortError") {
-          //
-        } else {
+        if (!["AbortError", "TypeError"].includes(error.name)) {
           testResult++;
         }
       }
