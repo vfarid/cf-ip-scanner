@@ -243,9 +243,10 @@ async function testIPs(ipList) {
         const response = await fetch(url, {
           signal: controller.signal,
         });
-
+        console.log(`${ip}   ${ch}   OK`)
         testResult++;
       } catch (error) {
+        console.log(`${ip}   ${ch}   Fail`, error.name)
         if (!["AbortError", "TypeError"].includes(error.name)) {
           testResult++;
         }
