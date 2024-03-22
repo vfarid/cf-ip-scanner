@@ -255,7 +255,7 @@ async function testIPs(ipList) {
     }
 
     const latency = Math.floor((performance.now() - startTime) / 5);
-
+    console.log(testResult, latency, maxLatency)
     if (testResult >= 3 && latency <= maxLatency) {
       numberOfWorkingIPs++;
       validIPs.push({ip: ip, latency: latency});
