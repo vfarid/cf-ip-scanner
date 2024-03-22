@@ -213,12 +213,7 @@ async function testIPs(ipList) {
     }
     testNo++;
     let testResult = 0;
-    let url = null;
-    if (protocol == 'https') {
-      url = `https://${ip}:${portNo}/__down`;
-    } else {
-      url = `http://${ip}:${portNo}/cdn-cgi/trace`;
-    }
+    let url = `${protocol}://${ip}:${portNo}/cdn-cgi/trace`;
 
     const startTime = performance.now();
     const controller = new AbortController();
@@ -261,7 +256,7 @@ async function testIPs(ipList) {
 
     const latency = Math.floor((performance.now() - startTime) / 5);
 
-    if (testResult === 5 && latency <= maxLatency) {
+    if (testResult >= 3 && latency <= maxLatency) {
       numberOfWorkingIPs++;
       validIPs.push({ip: ip, latency: latency});
       const sortedArr = validIPs.sort((a, b) => a.latency - b.latency);
