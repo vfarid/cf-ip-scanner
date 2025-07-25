@@ -302,7 +302,7 @@ async function testIPs(ipList) {
     `;
   } else {
     if (window.self !== window.top) {
-      window.top.postMessage({cleanIPs: validIPs.map(el => el.ip).join('\n')}, '*');
+      window.top.postMessage({cleanIPs: validIPs.map(el => el.ip).join('\n')}, 'https://your-trusted-origin.com');
     }
 
     document.getElementById('test-no').innerHTML = `
